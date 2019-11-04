@@ -3152,7 +3152,7 @@ def getObjectUrl(conn, obj):
 # Activities window & Progressbar
 def update_callback(request, cbString, **kwargs):
     """Update a callback handle with  key/value pairs"""
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
         request.session['callback'][cbString][key] = value
 
 
