@@ -19,6 +19,7 @@
 
 """Views.py for the OMERO JSON api app."""
 
+from datetime import datetime
 from django.views.generic import View
 from django.middleware import csrf
 from django.utils.decorators import method_decorator
@@ -38,6 +39,8 @@ from .api_exceptions import BadRequestError, \
     NotFoundError
 from omeroweb.api.decorators import login_required, json_response
 from omeroweb.webgateway.util import getIntOrDefault
+from omero.rtypes import unwrap
+from omero.sys import ParametersI
 
 
 def build_url(request, name, api_version, **kwargs):
@@ -717,6 +720,75 @@ class RoisView(ObjectsView):
         'url:roi': {'name': 'api_roi',
                     'kwargs': {'object_id': 'OBJECT_ID'}}
     }
+
+    def get(self, request, conn=None, **kwargs):
+        """GET a list of ROIs, filtering by various request parameters."""
+        opts = self.get_opts(request, **kwargs)
+        group = getIntOrDefault(request, 'group', -1)
+        # Get the data
+        d = datetime.now()
+
+        query = """
+        select shape.id,
+               shape.roi.id,
+               shape.x,
+               shape.y,
+               shape.theZ,
+               shape.theT
+        from Shape shape
+        join shape.roi roi
+        where roi.image.id=:id"""
+
+        params = ParametersI()
+        params.addId(opts['image'])
+        points = conn.getQueryService().projection(query, params, conn.SERVICE_OPTS)
+
+        rois = {}
+
+        details = {
+            'permissions': {
+                "@type": "TBD#Permissions",
+                "perm": "rw----",
+                "canAnnotate": True,
+                "canDelete": True,
+                "canEdit": True,
+                "isGroupWrite": True,
+                "isUserWrite": True,
+                "isUserRead": True
+            },
+            'owner': {"UserName": "will", "FirstName": "Will", "LastName": "Moore", '@id': 2},
+        }
+
+        for p in points:
+            [id, roi_id, x, y, z, t] = p
+            roi_id = unwrap(roi_id)
+            if roi_id not in rois:
+                rois[roi_id] = {
+                    '@id': roi_id,
+                    '@type': 'http://www.openmicroscopy.org/Schemas/OME/2016-06#ROI',
+                    'omero:details': details,
+                    'shapes': [],
+                }
+            rois[roi_id]['shapes'].append({
+                "@type": "http://www.openmicroscopy.org/Schemas/OME/2016-06#Point",
+                '@id': unwrap(id),
+                'X': unwrap(x),
+                'Y': unwrap(y),
+                'TheZ': unwrap(z),
+                'TheT': unwrap(t),
+                'omero:details': details,
+            })
+
+        rois = list(rois.values())
+        # rois = rois[0:10]
+        print(str(datetime.now() - d))
+        return {
+            'data': rois,
+            'meta': {
+                'totalCount': len(rois),
+            }
+        }
+
 
     def get_opts(self, request, **kwargs):
         """Add extra parameters to the opts dict."""
