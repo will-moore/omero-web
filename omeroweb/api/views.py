@@ -729,13 +729,12 @@ class RoisView(ObjectsView):
         d = datetime.now()
 
         query = """
-        select new map(shape.id as id,
-               shape.roi.id as roi,
-               shape.x as x,
-               shape.y as y,
-               shape.theZ as theZ,
-               shape.theT as theT,
-               shape as shape_details_permissions)
+        select shape.id,
+               shape.roi.id,
+               shape.x,
+               shape.y,
+               shape.theZ,
+               shape.theT
         from Shape shape
         join shape.roi roi
         where roi.image.id=:id"""
@@ -746,33 +745,38 @@ class RoisView(ObjectsView):
 
         rois = {}
 
-        owner = {"UserName": "will", "FirstName": "Will", "LastName": "Moore", '@id': 2}
-        # permissions is missing "@type": "TBD#Permissions",
+        details = {
+            'permissions': {
+                "@type": "TBD#Permissions",
+                "perm": "rw----",
+                "canAnnotate": True,
+                "canDelete": True,
+                "canEdit": True,
+                "isGroupWrite": True,
+                "isUserWrite": True,
+                "isUserRead": True
+            },
+            'owner': {"UserName": "will", "FirstName": "Will", "LastName": "Moore", '@id': 2},
+        }
 
         for p in points:
-            p = unwrap(p[0])
-            roi_id = p['roi']
+            [id, roi_id, x, y, z, t] = p
+            roi_id = unwrap(roi_id)
             if roi_id not in rois:
                 rois[roi_id] = {
                     '@id': roi_id,
                     '@type': 'http://www.openmicroscopy.org/Schemas/OME/2016-06#ROI',
-                    'omero:details': {
-                        'permissions': p['shape_details_permissions'],
-                        'owner': owner,
-                    },
+                    'omero:details': details,
                     'shapes': [],
                 }
             rois[roi_id]['shapes'].append({
                 "@type": "http://www.openmicroscopy.org/Schemas/OME/2016-06#Point",
-                '@id': p['id'],
-                'X': p['x'],
-                'Y': p['y'],
-                'TheZ': p['theZ'],
-                'TheT': p['theT'],
-                'omero:details': {
-                    'permissions': p['shape_details_permissions'],
-                    'owner': owner,
-                },
+                '@id': unwrap(id),
+                'X': unwrap(x),
+                'Y': unwrap(y),
+                'TheZ': unwrap(z),
+                'TheT': unwrap(t),
+                'omero:details': details,
             })
 
         rois = list(rois.values())
