@@ -725,6 +725,7 @@ class RoisView(ObjectsView):
         """GET a list of ROIs, filtering by various request parameters."""
         opts = self.get_opts(request, **kwargs)
         group = getIntOrDefault(request, 'group', -1)
+        user_id = conn.getUserId()
         # Get the data
         d = datetime.now()
 
@@ -734,7 +735,9 @@ class RoisView(ObjectsView):
                shape.x,
                shape.y,
                shape.theZ,
-               shape.theT
+               shape.theT,
+               shape.details.owner.id,
+               shape.details.group.id
         from Shape shape
         join shape.roi roi
         where roi.image.id=:id"""
@@ -745,28 +748,78 @@ class RoisView(ObjectsView):
 
         rois = {}
 
-        details = {
-            'permissions': {
-                "@type": "TBD#Permissions",
-                "perm": "rw----",
-                "canAnnotate": True,
-                "canDelete": True,
-                "canEdit": True,
-                "isGroupWrite": True,
-                "isUserWrite": True,
-                "isUserRead": True
-            },
-            'owner': {"UserName": "will", "FirstName": "Will", "LastName": "Moore", '@id': 2},
+        group_perms = {
+
         }
 
+        def get_group_perms(gid):
+            if gid in group_perms:
+                return group_perms[gid]
+            g = conn.getQueryService().get('ExperimenterGroup', gid)
+            perms = str(g.details.permissions)
+            group_perms[gid] = perms
+            return perms
+
+        permissions = {
+            "@type": "TBD#Permissions",
+            "perm": "rw----",
+            "canAnnotate": True,
+            "canDelete": True,
+            "canEdit": True,
+            "isGroupWrite": False,
+            "isUserWrite": True,
+            "isUserRead": True
+        }
+        def get_perms(owner_id, group_id):
+            perms = get_group_perms(group_id)
+            group_write = perms == 'rwrwrw'
+            if (user_id == owner_id):
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": True,
+                    "canDelete": True,
+                    "canEdit": True,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+            if perms == 'rwra--':
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": True,
+                    "canDelete": False,
+                    "canEdit": False,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+            if perms == 'rwr---':
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": False,
+                    "canDelete": False,
+                    "canEdit": False,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+
+            return permissions
+
         for p in points:
-            [id, roi_id, x, y, z, t] = p
+            [id, roi_id, x, y, z, t, owner_id, group_id] = p
             roi_id = unwrap(roi_id)
             if roi_id not in rois:
                 rois[roi_id] = {
                     '@id': roi_id,
                     '@type': 'http://www.openmicroscopy.org/Schemas/OME/2016-06#ROI',
-                    'omero:details': details,
+                    'omero:details': {
+                        'owner': {'@id': owner_id.val},
+                        'permissions': get_perms(owner_id.val, group_id.val)
+                    },
                     'shapes': [],
                 }
             rois[roi_id]['shapes'].append({
@@ -776,7 +829,10 @@ class RoisView(ObjectsView):
                 'Y': unwrap(y),
                 'TheZ': unwrap(z),
                 'TheT': unwrap(t),
-                'omero:details': details,
+                'omero:details': {
+                    'owner': {'@id': owner_id.val},
+                    'permissions': get_perms(owner_id.val, group_id.val)
+                },
             })
 
         rois = list(rois.values())
