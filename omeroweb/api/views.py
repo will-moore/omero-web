@@ -801,7 +801,8 @@ class RoisView(ObjectsView):
             return permissions
 
         for shape in shapes:
-            id = shape.id.val
+            encoder = get_encoder(shape.__class__)
+            sh = encoder.encode(shape)
             roi_id = shape.roi.id.val
             owner_id = shape.details.owner.id.val
             group_id = shape.details.group.id.val
@@ -815,18 +816,11 @@ class RoisView(ObjectsView):
                     },
                     'shapes': [],
                 }
-            rois[roi_id]['shapes'].append({
-                "@type": "http://www.openmicroscopy.org/Schemas/OME/2016-06#Point",
-                '@id': unwrap(id),
-                'X': unwrap(shape.x),
-                'Y': unwrap(shape.y),
-                'TheZ': unwrap(shape.theZ),
-                'TheT': unwrap(shape.theT),
-                'omero:details': {
-                    'owner': {'@id': owner_id},
-                    'permissions': get_perms(owner_id, group_id)
-                },
-            })
+            sh['omero:details'] = {
+                'owner': {'@id': owner_id},
+                'permissions': get_perms(owner_id, group_id)
+            }
+            rois[roi_id]['shapes'].append(sh)
 
         rois = list(rois.values())
         # rois = rois[0:10]
