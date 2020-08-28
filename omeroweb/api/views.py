@@ -729,6 +729,124 @@ class RoisView(ObjectsView):
         # Get the data
         d = datetime.now()
 
+        query = """select shape from Shape shape
+            join shape.roi roi
+            where roi.image.id=:id"""
+
+        params = ParametersI()
+        params.addId(opts['image'])
+        shapes = conn.getQueryService().findAllByQuery(query, params, conn.SERVICE_OPTS)
+
+        rois = {}
+
+        group_perms = {
+
+        }
+
+        def get_group_perms(gid):
+            if gid in group_perms:
+                return group_perms[gid]
+            g = conn.getQueryService().get('ExperimenterGroup', gid)
+            perms = str(g.details.permissions)
+            group_perms[gid] = perms
+            return perms
+
+        permissions = {
+            "@type": "TBD#Permissions",
+            "perm": "rw----",
+            "canAnnotate": True,
+            "canDelete": True,
+            "canEdit": True,
+            "isGroupWrite": False,
+            "isUserWrite": True,
+            "isUserRead": True
+        }
+        def get_perms(owner_id, group_id):
+            perms = get_group_perms(group_id)
+            group_write = perms == 'rwrwrw'
+            if (user_id == owner_id):
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": True,
+                    "canDelete": True,
+                    "canEdit": True,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+            if perms == 'rwra--':
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": True,
+                    "canDelete": False,
+                    "canEdit": False,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+            if perms == 'rwr---':
+                return {
+                    "@type": "TBD#Permissions",
+                    "perm": perms,
+                    "canAnnotate": False,
+                    "canDelete": False,
+                    "canEdit": False,
+                    "isGroupWrite": group_write,
+                    "isUserWrite": True,
+                    "isUserRead": True
+                }
+
+            return permissions
+
+        for shape in shapes:
+            id = shape.id.val
+            roi_id = shape.roi.id.val
+            owner_id = shape.details.owner.id.val
+            group_id = shape.details.group.id.val
+            if roi_id not in rois:
+                rois[roi_id] = {
+                    '@id': roi_id,
+                    '@type': 'http://www.openmicroscopy.org/Schemas/OME/2016-06#ROI',
+                    'omero:details': {
+                        'owner': {'@id': owner_id},
+                        'permissions': get_perms(owner_id, group_id)
+                    },
+                    'shapes': [],
+                }
+            rois[roi_id]['shapes'].append({
+                "@type": "http://www.openmicroscopy.org/Schemas/OME/2016-06#Point",
+                '@id': unwrap(id),
+                'X': unwrap(shape.x),
+                'Y': unwrap(shape.y),
+                'TheZ': unwrap(shape.theZ),
+                'TheT': unwrap(shape.theT),
+                'omero:details': {
+                    'owner': {'@id': owner_id},
+                    'permissions': get_perms(owner_id, group_id)
+                },
+            })
+
+        rois = list(rois.values())
+        # rois = rois[0:10]
+        print(str(datetime.now() - d))
+        return {
+            'data': rois,
+            'meta': {
+                'totalCount': len(rois),
+            }
+        }
+
+
+    def get2(self, request, conn=None, **kwargs):
+        """GET a list of ROIs, filtering by various request parameters."""
+        opts = self.get_opts(request, **kwargs)
+        group = getIntOrDefault(request, 'group', -1)
+        user_id = conn.getUserId()
+        # Get the data
+        d = datetime.now()
+
         query = """
         select shape.id,
                shape.roi.id,
