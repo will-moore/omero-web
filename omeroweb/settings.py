@@ -347,8 +347,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         parse_boolean,
         (
             "A boolean that turns on/off debug mode. "
-            "Use debug mode only in development, not in production, as it logs "
-            "sensitive and confidential information in plaintext."
+            "Use debug mode only in development, not in production, as it "
+            "logs sensitive and confidential information in plaintext."
         ),
     ],
     "omero.web.secret_key": [
@@ -378,8 +378,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         DEFAULT_SERVER_TYPE,
         check_server_type,
         (
-            "OMERO.web is configured to run in Gunicorn as a generic WSGI (TCP)"
-            "application by default. Available options: ``wsgi-tcp`` "
+            "OMERO.web is configured to run in Gunicorn as a generic WSGI "
+            "(TCP) application by default. Available options: ``wsgi-tcp`` "
             "(Gunicorn, default), ``wsgi`` (Advanced users only, e.g. manual "
             "Apache configuration with ``mod_wsgi``)."
         ),
@@ -423,7 +423,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
             '{"index": 5, '
             '"class": "django.contrib.messages.middleware.MessageMiddleware"},'
             '{"index": 6, '
-            '"class": "django.middleware.clickjacking.XFrameOptionsMiddleware"}'
+            '"class": '
+            '"django.middleware.clickjacking.XFrameOptionsMiddleware"}'
             "]"
         ),
         json.loads,
@@ -449,8 +450,9 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "false",
         parse_boolean,
         (
-            "Specifies whether to use the X-Forwarded-Host header in preference "
-            "to the Host header. This should only be enabled if a proxy which "
+            "Specifies whether to use the X-Forwarded-Host header in "
+            "preference to the Host header. "
+            "This should only be enabled if a proxy which "
             "sets this header is in use."
         ),
     ],
@@ -459,7 +461,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "/static/",
         str_slash,
         (
-            "URL to use when referring to static files. Example: ``'/static/'``"
+            "URL to use when referring to static files. "
+            "Example: ``'/static/'``"
             " or ``'http://static.example.com/'``. Used as the base path for"
             " asset  definitions (the Media class) and the staticfiles app. It"
             " must end in a slash if set to a non-empty value."
@@ -781,7 +784,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         (
             "The file storage engine to use when collecting static files with"
             " the collectstatic management command. See `the documentation "
-            "<https://django-pipeline.readthedocs.org/en/latest/storages.html>`_"
+            "<https://django-pipeline.readthedocs.org/en/latest/"
+            "storages.html>`_"
             " for more details."
         ),
     ],
@@ -820,8 +824,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "",
         str,
         (
-            "Customize the webclient top bar logo. The recommended image height "
-            "is 23 pixels and it must be hosted outside of OMERO.web."
+            "Customize the webclient top bar logo. The recommended image "
+            " height is 23 pixels and it must be hosted outside of OMERO.web."
         ),
     ],
     "omero.web.top_logo_link": [
@@ -865,7 +869,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "[]",
         json.loads,
         (
-            "Defines the additional locations the staticfiles app will traverse"
+            "Defines the additional locations the staticfiles app will "
+            "traverse"
             " if the FileSystemFinder finder is enabled, e.g. if you use the"
             " collectstatic or findstatic management command or use the static"
             " file serving view."
@@ -885,7 +890,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         None,
         identity,
         (
-            "Define template used as an index page ``http://your_host/omero/``."
+            "Define template used as an index page "
+            "``http://your_host/omero/``."
             "If None user is automatically redirected to the login page."
             "For example use 'webclient/index.html'. "
         ),
@@ -901,8 +907,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "{}",
         json.loads,
         (
-            "Redirect to the given location after logging in. It only supports "
-            "arguments for :djangodoc:`Django reverse function"
+            "Redirect to the given location after logging in. It only "
+            "supports arguments for :djangodoc:`Django reverse function"
             " <ref/urlresolvers/#reverse>`. "
             'For example: ``\'{"redirect": ["webindex"], "viewname":'
             ' "load_template", "args":["userdata"], "query_string":'
@@ -936,10 +942,10 @@ CUSTOM_SETTINGS_MAPPINGS = {
         str,
         (
             "Override the root application label that handles ``/``. "
-            "**Warning** you must ensure the application's URLs do not conflict "
-            "with other applications. "
-            "omero-gallery is an example of an application that can be used for "
-            "this (set to ``gallery``)"
+            "**Warning** you must ensure the application's URLs do not "
+            "conflict with other applications. "
+            "omero-gallery is an example of an application that can be used "
+            "for this (set to ``gallery``)"
         ),
     ],
     "omero.web.databases": ["DATABASES", "{}", json.loads, None],
@@ -978,7 +984,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         json.loads,
         (
             "Add links to the top header: links are ``['Link Text', "
-            "'link|lookup_view', options]``, where the url is reverse('link'), "
+            "'link|lookup_view', options]``, "
+            "where the url is reverse('link'), "
             "simply 'link' (for external urls) or lookup_view is a detailed "
             'dictionary {"viewname": "str", "args": [], "query_string": '
             '{"param": "value" }], '
@@ -1016,7 +1023,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
             ' "metadata_tab"],'
             # '["ROIs", "webtest/webclient_plugins/right_plugin.rois.js.html",
             # "image_roi_tab"],'
-            '["Preview", "webclient/data/includes/right_plugin.preview.js.html"'
+            '["Preview", '
+            '"webclient/data/includes/right_plugin.preview.js.html"'
             ', "preview_tab"]]'
         ),
         json.loads,
@@ -1050,8 +1058,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "[]",
         json.loads,
         (
-            "A list of origin hostnames that are authorized to make cross-site "
-            "HTTP requests. "
+            "A list of origin hostnames that are authorized to make "
+            "cross-site HTTP requests. "
             "Used by the django-cors-headers app as described at "
             "https://github.com/ottoyiu/django-cors-headers"
         ),
@@ -1077,8 +1085,8 @@ CUSTOM_SETTINGS_MAPPINGS = {
         json.loads,
         (
             "Additional Django settings as list of key-value tuples. "
-            "Use this to set or override Django settings that aren't managed by "
-            'OMERO.web. E.g. ``["CUSTOM_KEY", "CUSTOM_VALUE"]``'
+            "Use this to set or override Django settings that aren't managed "
+            'by OMERO.web. E.g. ``["CUSTOM_KEY", "CUSTOM_VALUE"]``'
         ),
     ],
     "omero.web.nginx_server_extra_config": [

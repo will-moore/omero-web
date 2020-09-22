@@ -130,7 +130,9 @@ class render_response(omeroweb.decorators.render_response):
             "constants": {
                 "NSCOMPANIONFILE": constants.namespaces.NSCOMPANIONFILE,
                 "ORIGINALMETADATA": constants.annotation.file.ORIGINALMETADATA,
-                "NSCLIENTMAPANNOTATION": constants.metadata.NSCLIENTMAPANNOTATION,
+                "NSCLIENTMAPANNOTATION": (
+                    constants.metadata.NSCLIENTMAPANNOTATION
+                ),
             }
         }
 

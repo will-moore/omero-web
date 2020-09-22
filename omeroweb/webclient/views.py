@@ -2072,7 +2072,9 @@ def load_metadata_acquisition(
                 form_objective = MetadataObjectiveSettingsForm(
                     initial={
                         "objectiveSettings": image.getObjectiveSettings(),
-                        "objective": image.getObjectiveSettings().getObjective(),
+                        "objective": (
+                            image.getObjectiveSettings().getObjective()
+                        ),
                         "mediums": mediums,
                         "immersions": immersions,
                         "corrections": corrections,

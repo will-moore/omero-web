@@ -88,7 +88,9 @@ class TestTree(object):
             "id": 1,
             "ownerId": 1,
             "name": "Run 1",
-            "permsCss": "canEdit canAnnotate canLink canDelete canChgrp isOwned",
+            "permsCss": (
+                "canEdit canAnnotate canLink canDelete canChgrp isOwned"
+            ),
         }
 
         marshaled = _marshal_plate_acquisition(mock_conn, row)
@@ -109,7 +111,9 @@ class TestTree(object):
             "id": 1,
             "ownerId": 1,
             "name": "name",
-            "permsCss": "canEdit canAnnotate canLink canDelete canChgrp isOwned",
+            "permsCss": (
+                "canEdit canAnnotate canLink canDelete canChgrp isOwned"
+            ),
         }
 
         marshaled = _marshal_plate_acquisition(mock_conn, row)
@@ -130,7 +134,9 @@ class TestTree(object):
             "id": 1,
             "ownerId": 1,
             "name": "2014-05-08 10:37:02 - 2014-05-08 10:38:30",
-            "permsCss": "canEdit canAnnotate canLink canDelete canChgrp isOwned",
+            "permsCss": (
+                "canEdit canAnnotate canLink canDelete canChgrp isOwned"
+            ),
         }
 
         marshaled = _marshal_plate_acquisition(mock_conn, row)
@@ -201,7 +207,9 @@ class TestTree(object):
             "id": 1,
             "ownerId": 1,
             "name": "name",
-            "permsCss": "canEdit canAnnotate canLink canDelete canChgrp isOwned",
+            "permsCss": (
+                "canEdit canAnnotate canLink canDelete canChgrp isOwned"
+            ),
             "childCount": 1,
         }
 
@@ -233,7 +241,9 @@ class TestTree(object):
             "id": 1,
             "ownerId": 1,
             "name": "name",
-            "permsCss": "canEdit canAnnotate canLink canDelete canChgrp isOwned",
+            "permsCss": (
+                "canEdit canAnnotate canLink canDelete canChgrp isOwned"
+            ),
             "childCount": 2,
         }
 
