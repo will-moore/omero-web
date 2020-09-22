@@ -29,13 +29,17 @@ versions = "|".join([re.escape(v) for v in api_settings.API_VERSIONS])
 
 api_versions = url(r"^$", views.api_versions, name="api_versions")
 
-api_base = url(r"^v(?P<api_version>%s)/$" % versions, views.api_base, name="api_base")
+api_base = url(
+    r"^v(?P<api_version>%s)/$" % versions, views.api_base, name="api_base"
+)
 """
 GET various urls listed below
 """
 
 api_token = url(
-    r"^v(?P<api_version>%s)/token/$" % versions, views.api_token, name="api_token"
+    r"^v(?P<api_version>%s)/token/$" % versions,
+    views.api_token,
+    name="api_token",
 )
 """
 GET the CSRF token for this session. Needs to be included
@@ -43,14 +47,18 @@ in header with all POST, PUT & DELETE requests
 """
 
 api_servers = url(
-    r"^v(?P<api_version>%s)/servers/$" % versions, views.api_servers, name="api_servers"
+    r"^v(?P<api_version>%s)/servers/$" % versions,
+    views.api_servers,
+    name="api_servers",
 )
 """
 GET list of available OMERO servers to login to.
 """
 
 api_login = url(
-    r"^v(?P<api_version>%s)/login/$" % versions, LoginView.as_view(), name="api_login"
+    r"^v(?P<api_version>%s)/login/$" % versions,
+    LoginView.as_view(),
+    name="api_login",
 )
 """
 Login to OMERO. POST with 'username', 'password' and 'server' index
@@ -94,7 +102,8 @@ GET all datasets, using omero-marshal to generate json
 """
 
 api_project_datasets = url(
-    r"^v(?P<api_version>%s)/m/projects/" "(?P<project_id>[0-9]+)/datasets/$" % versions,
+    r"^v(?P<api_version>%s)/m/projects/"
+    "(?P<project_id>[0-9]+)/datasets/$" % versions,
     views.DatasetsView.as_view(),
     name="api_project_datasets",
 )
@@ -121,7 +130,8 @@ GET all images, using omero-marshal to generate json
 """
 
 api_dataset_images = url(
-    r"^v(?P<api_version>%s)/m/datasets/" "(?P<dataset_id>[0-9]+)/images/$" % versions,
+    r"^v(?P<api_version>%s)/m/datasets/"
+    "(?P<dataset_id>[0-9]+)/images/$" % versions,
     views.ImagesView.as_view(),
     name="api_dataset_images",
 )
@@ -130,7 +140,8 @@ GET Images in Dataset, using omero-marshal to generate json
 """
 
 api_dataset_projects = url(
-    r"^v(?P<api_version>%s)/m/datasets/" "(?P<dataset_id>[0-9]+)/projects/$" % versions,
+    r"^v(?P<api_version>%s)/m/datasets/"
+    "(?P<dataset_id>[0-9]+)/projects/$" % versions,
     views.ProjectsView.as_view(),
     name="api_dataset_projects",
 )
@@ -148,7 +159,8 @@ Image url to GET or DELETE a single Image
 """
 
 api_image_datasets = url(
-    r"^v(?P<api_version>%s)/m/images/" "(?P<image_id>[0-9]+)/datasets/$" % versions,
+    r"^v(?P<api_version>%s)/m/images/"
+    "(?P<image_id>[0-9]+)/datasets/$" % versions,
     views.DatasetsView.as_view(),
     name="api_image_datasets",
 )
@@ -184,7 +196,8 @@ GET all plates, using omero-marshal to generate json
 """
 
 api_screen_plates = url(
-    r"^v(?P<api_version>%s)/m/screens/" "(?P<screen_id>[0-9]+)/plates/$" % versions,
+    r"^v(?P<api_version>%s)/m/screens/"
+    "(?P<screen_id>[0-9]+)/plates/$" % versions,
     views.PlatesView.as_view(),
     name="api_screen_plates",
 )
@@ -193,7 +206,8 @@ GET Plates in Screen, using omero-marshal to generate json
 """
 
 api_well_plates = url(
-    r"^v(?P<api_version>%s)/m/wells/" "(?P<well_id>[0-9]+)/plates/$" % versions,
+    r"^v(?P<api_version>%s)/m/wells/"
+    "(?P<well_id>[0-9]+)/plates/$" % versions,
     views.PlatesView.as_view(),
     name="api_well_plates",
 )
@@ -230,7 +244,8 @@ GET PlateAcquisitions in Plate, using omero-marshal to generate json
 """
 
 api_plateacquisition = url(
-    r"^v(?P<api_version>%s)/m/plateacquisitions/" "(?P<object_id>[0-9]+)/$" % versions,
+    r"^v(?P<api_version>%s)/m/plateacquisitions/"
+    "(?P<object_id>[0-9]+)/$" % versions,
     views.PlateAcquisitionView.as_view(),
     name="api_plateacquisition",
 )
@@ -261,7 +276,8 @@ GET Wells from a single Index in Plate
 """
 
 api_plate_wells = url(
-    r"^v(?P<api_version>%s)/m/plates/" "(?P<plate_id>[0-9]+)/wells/$" % versions,
+    r"^v(?P<api_version>%s)/m/plates/"
+    "(?P<plate_id>[0-9]+)/wells/$" % versions,
     views.WellsView.as_view(),
     name="api_plate_wells",
 )
@@ -289,7 +305,8 @@ Well url to GET or DELETE a single Well
 """
 
 api_plate_screens = url(
-    r"^v(?P<api_version>%s)/m/plates/" "(?P<plate_id>[0-9]+)/screens/$" % versions,
+    r"^v(?P<api_version>%s)/m/plates/"
+    "(?P<plate_id>[0-9]+)/screens/$" % versions,
     views.ScreensView.as_view(),
     name="api_plate_screens",
 )
@@ -316,7 +333,8 @@ ROI url to GET or DELETE a single ROI
 """
 
 api_image_rois = url(
-    r"^v(?P<api_version>%s)/m/images/" "(?P<image_id>[0-9]+)/rois/$" % versions,
+    r"^v(?P<api_version>%s)/m/images/"
+    "(?P<image_id>[0-9]+)/rois/$" % versions,
     views.RoisView.as_view(),
     name="api_image_rois",
 )
@@ -334,7 +352,8 @@ GET Experimenters, using omero-marshal to generate json
 """
 
 api_experimenter = url(
-    r"^v(?P<api_version>%s)/m/experimenters/" "(?P<object_id>[0-9]+)/$" % versions,
+    r"^v(?P<api_version>%s)/m/experimenters/"
+    "(?P<object_id>[0-9]+)/$" % versions,
     views.ExperimenterView.as_view(),
     name="api_experimenter",
 )
@@ -362,7 +381,8 @@ GET ExperimenterGroups, using omero-marshal to generate json
 """
 
 api_group = url(
-    r"^v(?P<api_version>%s)/m/experimentergroups/" "(?P<object_id>[0-9]+)/$" % versions,
+    r"^v(?P<api_version>%s)/m/experimentergroups/"
+    "(?P<object_id>[0-9]+)/$" % versions,
     views.ExperimenterGroupView.as_view(),
     name="api_experimentergroup",
 )

@@ -33,7 +33,11 @@ urlpatterns = [
     url(r"^$", views.index, name="waindex"),
     url(r"^login/$", WebclientLoginView.as_view(), name="walogin"),
     url(r"^logout/$", views.logout, name="walogout"),
-    url(r"^forgottenpassword/$", views.forgotten_password, name="waforgottenpassword"),
+    url(
+        r"^forgottenpassword/$",
+        views.forgotten_password,
+        name="waforgottenpassword",
+    ),
     url(r"^experimenters/$", views.experimenters, name="waexperimenters"),
     url(
         r"^experimenter/(?P<action>[a-z]+)/(?:(?P<eid>[0-9]+)/)?$",
@@ -47,7 +51,8 @@ urlpatterns = [
     ),
     url(r"^groups/$", views.groups, name="wagroups"),
     url(
-        r"^group/(?P<action>((?i)new|create|edit|save))/" "(?:(?P<gid>[0-9]+)/)?$",
+        r"^group/(?P<action>((?i)new|create|edit|save))/"
+        "(?:(?P<gid>[0-9]+)/)?$",
         views.manage_group,
         name="wamanagegroupid",
     ),
@@ -56,7 +61,11 @@ urlpatterns = [
         views.manage_group_owner,
         name="wamanagegroupownerid",
     ),
-    url(r"^myaccount/(?:(?P<action>[a-z]+)/)?$", views.my_account, name="wamyaccount"),
+    url(
+        r"^myaccount/(?:(?P<action>[a-z]+)/)?$",
+        views.my_account,
+        name="wamyaccount",
+    ),
     url(r"^stats/$", views.stats, name="wastats"),
     url(
         r"^drivespace_json/groups/$",

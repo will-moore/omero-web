@@ -112,7 +112,8 @@ def assert_config_argtype(func):
             mismatch = False
             if args[0].system:
                 self.ctx.die(
-                    683, "ERROR: --system is no longer supported, " "see --help"
+                    683,
+                    "ERROR: --system is no longer supported, " "see --help",
                 )
             if settings.APPLICATION_SERVER in ("development",):
                 mismatch = True
@@ -155,7 +156,9 @@ class WebControl(DiagnosticsControl):
         self._add_diagnostics(parser, sub)
 
         parser.add(sub, self.help, "Extended help")
-        start = parser.add(sub, self.start, "Primary start for the OMERO.web server")
+        start = parser.add(
+            sub, self.start, "Primary start for the OMERO.web server"
+        )
         parser.add(sub, self.stop, "Stop the OMERO.web server")
         restart = parser.add(sub, self.restart, "Restart the OMERO.web server")
         parser.add(sub, self.status, "Status for the OMERO.web server")
@@ -199,7 +202,9 @@ class WebControl(DiagnosticsControl):
         nginx_group = config.add_argument_group(
             "Nginx arguments", "Optional arguments for nginx templates."
         )
-        nginx_group.add_argument("--http", type=int, help="HTTP port for web server")
+        nginx_group.add_argument(
+            "--http", type=int, help="HTTP port for web server"
+        )
         nginx_group.add_argument(
             "--servername",
             type=str,
@@ -213,7 +218,9 @@ class WebControl(DiagnosticsControl):
             help="Maximum allowed size of the client request body."
             "Default: 0 (disabled)",
         )
-        nginx_group.add_argument("--system", action="store_true", help=SUPPRESS)
+        nginx_group.add_argument(
+            "--system", action="store_true", help=SUPPRESS
+        )
 
         parser.add(
             sub,
@@ -250,14 +257,17 @@ class WebControl(DiagnosticsControl):
         call.add_argument("arg", nargs="*")
 
         enableapp = parser.add(
-            sub, self.enableapp, "Developer use: runs enable.py and then syncdb"
+            sub,
+            self.enableapp,
+            "Developer use: runs enable.py and then syncdb",
         )
         enableapp.add_argument("appname", nargs="*")
 
         parser.add(
             sub,
             self.gateway,
-            "Developer use: Loads the blitz gateway into a Python" " interpreter",
+            "Developer use: Loads the blitz gateway into a Python"
+            " interpreter",
         )
 
     @config_required
@@ -265,7 +275,11 @@ class WebControl(DiagnosticsControl):
         """Return extended help"""
         try:
             CONFIG_TABLE_FMT = "    %-35.35s  %-8s  %r\n"
-            CONFIG_TABLE = CONFIG_TABLE_FMT % ("Key", "Default?", "Current value")
+            CONFIG_TABLE = CONFIG_TABLE_FMT % (
+                "Key",
+                "Default?",
+                "Current value",
+            )
 
             for key in sorted(settings.CUSTOM_SETTINGS_MAPPINGS):
                 (
@@ -276,10 +290,15 @@ class WebControl(DiagnosticsControl):
                     using_default,
                 ) = settings.CUSTOM_SETTINGS_MAPPINGS[key]
                 global_value = getattr(settings, global_name, "(unset)")
-                CONFIG_TABLE += CONFIG_TABLE_FMT % (key, using_default, global_value)
+                CONFIG_TABLE += CONFIG_TABLE_FMT % (
+                    key,
+                    using_default,
+                    global_value,
+                )
         except Exception:
             CONFIG_TABLE = (
-                "INVALID OR LOCKED CONFIGURATION!" " Cannot display default values"
+                "INVALID OR LOCKED CONFIGURATION!"
+                " Cannot display default values"
             )
 
         self.ctx.err(LONGHELP % CONFIG_TABLE)
@@ -352,7 +371,9 @@ class WebControl(DiagnosticsControl):
         )
 
         if settings.APPLICATION_SERVER not in settings.WSGI_TYPES:
-            self.ctx.die(679, "Web template configuration requires" "wsgi or wsgi-tcp.")
+            self.ctx.die(
+                679, "Web template configuration requires" "wsgi or wsgi-tcp."
+            )
 
         template_file = "%s.conf.template" % server
         c = bytes_to_native_str(
@@ -370,7 +391,8 @@ class WebControl(DiagnosticsControl):
             apps = [
                 x.name
                 for x in filter(
-                    lambda x: x.isdir() and (x / "scripts" / "enable.py").exists(),
+                    lambda x: x.isdir()
+                    and (x / "scripts" / "enable.py").exists(),
                     location.listdir(unreadable_as_empty=True),
                 )
             ]
@@ -379,10 +401,15 @@ class WebControl(DiagnosticsControl):
                 settings.INSTALLED_APPS,
             )
             apps = filter(lambda x: x not in iapps, apps)
-            self.ctx.out("[enableapp] available apps:\n - " + "\n - ".join(apps) + "\n")
+            self.ctx.out(
+                "[enableapp] available apps:\n - " + "\n - ".join(apps) + "\n"
+            )
         else:
             for app in args.appname:
-                args = [sys.executable, location / app / "scripts" / "enable.py"]
+                args = [
+                    sys.executable,
+                    location / app / "scripts" / "enable.py",
+                ]
                 rv = self.ctx.call(args, cwd=location)
                 if rv != 0:
                     self.ctx.die(121, "Failed to enable '%s'.\n" % app)
@@ -416,7 +443,9 @@ class WebControl(DiagnosticsControl):
                 scriptname = " ".join(scriptname[1:])
             else:
                 scriptname = scriptname[0]
-            cargs.extend([location / appname / "scripts" / scriptname] + args.arg)
+            cargs.extend(
+                [location / appname / "scripts" / scriptname] + args.arg
+            )
             os.environ["DJANGO_SETTINGS_MODULE"] = "omeroweb.settings"
             self.set_environ()
             self.ctx.call(cargs, cwd=location)
@@ -436,7 +465,8 @@ class WebControl(DiagnosticsControl):
     def clearsessions(self, args, settings):
         """Clean out expired sessions."""
         self.ctx.out(
-            "Clearing expired sessions. This may take some time... ", newline=False
+            "Clearing expired sessions. This may take some time... ",
+            newline=False,
         )
         location = self._get_python_dir() / "omeroweb"
         cmd = [sys.executable, "manage.py", "clearsessions"]
@@ -516,7 +546,9 @@ class WebControl(DiagnosticsControl):
         if settings.WSGI_WORKER_CLASS == "sync":
             cmd += " --threads %d" % settings.WSGI_THREADS
         elif settings.WSGI_WORKER_CLASS == "gevent":
-            cmd += " --worker-connections %d" % settings.WSGI_WORKER_CONNECTIONS
+            cmd += (
+                " --worker-connections %d" % settings.WSGI_WORKER_CONNECTIONS
+            )
             cmd += " --worker-class %s " % settings.WSGI_WORKER_CLASS
         else:
             self.ctx.die(
@@ -658,7 +690,9 @@ class WebControl(DiagnosticsControl):
         elif deploy in (settings.WSGI,):
             self.ctx.err(APACHE_MOD_WSGI_ERR)
         elif deploy in (settings.DEVELOPMENT,):
-            self.ctx.err("DEVELOPMENT: You will have to kill processes by hand!")
+            self.ctx.err(
+                "DEVELOPMENT: You will have to kill processes by hand!"
+            )
         else:
             self.ctx.err(
                 "Invalid APPLICATION_SERVER "
@@ -696,7 +730,9 @@ class WebControl(DiagnosticsControl):
             self.ctx.err(APACHE_MOD_WSGI_ERR)
             return False
         elif deploy in settings.DEVELOPMENT:
-            self.ctx.err("DEVELOPMENT: You will have to kill processes by hand!")
+            self.ctx.err(
+                "DEVELOPMENT: You will have to kill processes by hand!"
+            )
             return False
         else:
             self.ctx.err(

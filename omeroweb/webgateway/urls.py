@@ -32,7 +32,9 @@ optionally traversing object model graph.
 """
 
 table_query = url(
-    r"^table/(?P<fileid>\d+)/query/$", views.table_query, name="webgateway_table_query"
+    r"^table/(?P<fileid>\d+)/query/$",
+    views.table_query,
+    name="webgateway_table_query",
 )
 """
 Query a table specified by fileid
@@ -131,7 +133,8 @@ Params in render_col_plot/<iid>/<z>/<t>/<x>/<w> are:
 """
 
 render_thumbnail = url(
-    r"^render_thumbnail/(?P<iid>[0-9]+)" "/(?:(?P<w>[0-9]+)/)?(?:(?P<h>[0-9]+)/)?$",
+    r"^render_thumbnail/(?P<iid>[0-9]+)"
+    "/(?:(?P<w>[0-9]+)/)?(?:(?P<h>[0-9]+)/)?$",
     views.render_thumbnail,
     name="webgateway_render_thumbnail",
 )
@@ -219,7 +222,9 @@ Params in render_movie/<iid>/<axis>/<pos> are:
 # json methods...
 
 listProjects_json = url(
-    r"^proj/list/$", views.listProjects_json, name="webgateway_listProjects_json"
+    r"^proj/list/$",
+    views.listProjects_json,
+    name="webgateway_listProjects_json",
 )
 """
 json method: returning list of all projects available to current user. See
@@ -325,7 +330,8 @@ Image ids are specified in query string as list, e.g. id=1&id=2.
 """
 
 webgateway_get_thumbnail_json = url(
-    r"^get_thumbnail/(?P<iid>[0-9]+)" "/(?:(?P<w>[0-9]+)/)?(?:(?P<h>[0-9]+)/)?$",
+    r"^get_thumbnail/(?P<iid>[0-9]+)"
+    "/(?:(?P<w>[0-9]+)/)?(?:(?P<h>[0-9]+)/)?$",
     views.get_thumbnail_json,
     name="webgateway_get_thumbnail_json",
 )
@@ -356,7 +362,9 @@ Returns E.g
 """
 
 wellData_json = url(
-    r"^wellData/(?P<wid>[0-9]+)/$", views.wellData_json, name="webgateway_wellData_json"
+    r"^wellData/(?P<wid>[0-9]+)/$",
+    views.wellData_json,
+    name="webgateway_wellData_json",
 )
 """
 json method: returns details of specified Well. See L{views.wellData_json}.
@@ -405,7 +413,9 @@ channel of an image. A single plane is specified by ?theT=1&theZ=2.
 """
 
 full_viewer = url(
-    r"^img_detail/(?P<iid>[0-9]+)/$", views.full_viewer, name="webgateway_full_viewer"
+    r"^img_detail/(?P<iid>[0-9]+)/$",
+    views.full_viewer,
+    name="webgateway_full_viewer",
 )
 """
 Returns html page displaying full image viewer and image details, rendering
@@ -430,14 +440,18 @@ Returns 'true' if worked OK.
 """
 
 get_image_rdef_json = url(
-    r"^getImgRDef/$", views.get_image_rdef_json, name="webgateway_get_image_rdef_json"
+    r"^getImgRDef/$",
+    views.get_image_rdef_json,
+    name="webgateway_get_image_rdef_json",
 )
 """
 Gets rendering definition from the 'session' if saved.
 Returns json dict of 'c', 'm', 'z', 't'.
 """
 
-listLuts_json = url(r"^luts/$", views.listLuts_json, name="webgateway_listLuts_json")
+listLuts_json = url(
+    r"^luts/$", views.listLuts_json, name="webgateway_listLuts_json"
+)
 """
 json method: returning list of all lookup tables available
 for rendering engine.
@@ -468,7 +482,9 @@ Copy the rendering settings from one image to a list of images, specified in
 request by 'fromid' and list of 'toids'. See L{views.copy_image_rdef_json}
 """
 
-reset_rdef_json = url(r"^resetRDef/$", views.reset_rdef_json, name="reset_rdef_json")
+reset_rdef_json = url(
+    r"^resetRDef/$", views.reset_rdef_json, name="reset_rdef_json"
+)
 """
 Reset the images within specified objects to their rendering settings at
 import time"
@@ -493,7 +509,9 @@ Returns 'true' if switch went OK.
 """
 
 download_as = url(
-    r"^download_as/(?:(?P<iid>[0-9]+)/)?$", views.download_as, name="download_as"
+    r"^download_as/(?:(?P<iid>[0-9]+)/)?$",
+    views.download_as,
+    name="download_as",
 )
 
 archived_files = url(
@@ -519,7 +537,9 @@ Get a json dict of original file paths.
 """
 
 open_with_options = url(
-    r"^open_with/$", views.open_with_options, name="webgateway_open_with_options"
+    r"^open_with/$",
+    views.open_with_options,
+    name="webgateway_open_with_options",
 )
 """
 This makes the settings.OPEN_WITH configuration available via json

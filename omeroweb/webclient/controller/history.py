@@ -87,12 +87,16 @@ class BaseCalendar(BaseController):
             self.last_month = now.replace(month=now.month - 1)
             self.last_year = self.year
 
-        self.week_day_labels = [x for x in calendar.weekheader(5).split(" ") if x != ""]
+        self.week_day_labels = [
+            x for x in calendar.weekheader(5).split(" ") if x != ""
+        ]
         self.current_month = datetime.datetime(self.year, self.month, 1)
         self.month_name = calendar.month_name[self.month]
 
         if self.month == 12:
-            self.next_month = self.current_month.replace(year=self.year + 1, month=1)
+            self.next_month = self.current_month.replace(
+                year=self.year + 1, month=1
+            )
         else:
             self.next_month = self.current_month.replace(
                 month=self.current_month.month + 1
@@ -101,7 +105,9 @@ class BaseCalendar(BaseController):
         self.next_month_name = self.next_month.strftime("%B")
 
         if self.month == 1:
-            self.last_month = self.current_month.replace(year=self.year - 1, month=12)
+            self.last_month = self.current_month.replace(
+                year=self.year - 1, month=12
+            )
         else:
             self.last_month = self.current_month.replace(
                 month=self.current_month.month - 1
@@ -117,7 +123,9 @@ class BaseCalendar(BaseController):
         items = self.calendar_items(self.month, self.monthrange)
 
         for week, day in [
-            (week, day) for week in range(0, len(self.cal_weeks)) for day in range(0, 7)
+            (week, day)
+            for week in range(0, len(self.cal_weeks))
+            for day in range(0, 7)
         ]:
             imgCounter = dict()
             dsCounter = dict()
@@ -158,7 +166,9 @@ class BaseCalendar(BaseController):
                     }
                 )
             else:
-                self.cal_days.append({"day": self.cal_weeks[week][day], "counter": {}})
+                self.cal_days.append(
+                    {"day": self.cal_weeks[week][day], "counter": {}}
+                )
             self.cal_weeks[week][day] = {"cell": self.cal_days[-1]}
 
     def calendar_items(self, month, monthrange):
@@ -170,10 +180,13 @@ class BaseCalendar(BaseController):
             ("%i-%s-01 00:00:00" % (self.year, mn)), "%Y-%m-%d %H:%M:%S"
         )
         d2 = datetime.datetime.strptime(
-            ("%i-%s-%i 23:59:59" % (self.year, mn, monthrange)), "%Y-%m-%d %H:%M:%S"
+            ("%i-%s-%i 23:59:59" % (self.year, mn, monthrange)),
+            "%Y-%m-%d %H:%M:%S",
         )
 
-        start = long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+        start = (
+            long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+        )
         end = long(time.mktime(d2.timetuple()) + 1e-6 * d2.microsecond) * 1000
         all_logs = self.conn.getEventsByPeriod(start, end, self.eid)
 
@@ -220,12 +233,16 @@ class BaseCalendar(BaseController):
             ("%i-%s-%s 23:59:59" % (self.year, mn, dy)), "%Y-%m-%d %H:%M:%S"
         )
 
-        start = long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+        start = (
+            long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+        )
         end = long(time.mktime(d2.timetuple()) + 1e-6 * d2.microsecond) * 1000
 
         self.day_items = list()
         self.day_items_size = 0
-        self.total_items_size = self.conn.countDataByPeriod(start, end, self.eid)
+        self.total_items_size = self.conn.countDataByPeriod(
+            start, end, self.eid
+        )
 
         obj_logs = self.conn.getDataByPeriod(
             start=start, end=end, eid=self.eid, page=page
@@ -248,4 +265,6 @@ class BaseCalendar(BaseController):
                 + len(obj_logs["dataset"])
                 + len(obj_logs["image"])
             )
-            self.paging = self.doPaging(page, self.day_items_size, obj_logs_counter)
+            self.paging = self.doPaging(
+                page, self.day_items_size, obj_logs_counter
+            )

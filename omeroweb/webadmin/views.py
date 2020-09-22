@@ -91,9 +91,9 @@ class render_response_admin(omeroweb.webclient.decorators.render_response):
                 " group"
             ) % (reverse(viewname="wamanagegroupid", args=["new"]))
             context["ome"]["message"] = msg
-        context["ome"]["email"] = request.session.get("server_settings", False).get(
-            "email", False
-        )
+        context["ome"]["email"] = request.session.get(
+            "server_settings", False
+        ).get("email", False)
 
 
 ##############################################################################
@@ -298,7 +298,11 @@ def drivespace_json(
             b = getBytes(ctx, e.getId())
             if b > 0:
                 diskUsage.append(
-                    {"label": e.getNameWithInitial(), "data": b, "userId": e.getId()}
+                    {
+                        "label": e.getNameWithInitial(),
+                        "data": b,
+                        "userId": e.getId(),
+                    }
                 )
 
     elif userId is not None:
@@ -321,7 +325,11 @@ def drivespace_json(
             b = getBytes(ctx, e.getId())
             if b > 0:
                 diskUsage.append(
-                    {"label": e.getNameWithInitial(), "data": b, "userId": e.getId()}
+                    {
+                        "label": e.getNameWithInitial(),
+                        "data": b,
+                        "userId": e.getId(),
+                    }
                 )
 
     diskUsage.sort(key=lambda x: x["data"], reverse=True)
@@ -370,7 +378,9 @@ def forgotten_password(request, **kwargs):
                 except omero.CmdError as exp:
                     logger.error(exp.err)
                     try:
-                        error = exp.err.parameters[exp.err.parameters.keys()[0]]
+                        error = exp.err.parameters[
+                            exp.err.parameters.keys()[0]
+                        ]
                     except Exception:
                         error = exp
     else:
@@ -415,7 +425,10 @@ def experimenters(request, conn=None, **kwargs):
     )
     can_modify_user = "ModifyUser" in conn.getCurrentAdminPrivileges()
 
-    context = {"experimenterList": experimenterList, "can_modify_user": can_modify_user}
+    context = {
+        "experimenterList": experimenterList,
+        "can_modify_user": can_modify_user,
+    }
     context["template"] = template
     return context
 
@@ -428,7 +441,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
     groups = list(conn.getObjects("ExperimenterGroup"))
     groups.sort(key=lambda x: x.getName().lower())
 
-    user_privileges = conn.get_privileges_for_form(conn.getCurrentAdminPrivileges())
+    user_privileges = conn.get_privileges_for_form(
+        conn.getCurrentAdminPrivileges()
+    )
     can_modify_user = "ModifyUser" in user_privileges
 
     if action == "new":
@@ -441,7 +456,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
                 "groups": otherGroupsInitialList(groups),
             },
         )
-        admin_groups = [conn.getAdminService().getSecurityRoles().systemGroupId]
+        admin_groups = [
+            conn.getAdminService().getSecurityRoles().systemGroupId
+        ]
         context = {
             "form": form,
             "admin_groups": admin_groups,
@@ -455,7 +472,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
         else:
             name_check = conn.checkOmeName(request.POST.get("omename"))
             email_check = conn.checkEmail(request.POST.get("email"))
-            my_groups = getSelectedGroups(conn, request.POST.getlist("other_groups"))
+            my_groups = getSelectedGroups(
+                conn, request.POST.getlist("other_groups")
+            )
             initial = {
                 "with_password": True,
                 "my_groups": my_groups,
@@ -472,7 +491,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
                 email_check=email_check,
             )
             if form.is_valid():
-                logger.debug("Create experimenter form:" + str(form.cleaned_data))
+                logger.debug(
+                    "Create experimenter form:" + str(form.cleaned_data)
+                )
                 omename = form.cleaned_data["omename"]
                 firstName = form.cleaned_data["first_name"]
                 middleName = form.cleaned_data["middle_name"]
@@ -495,7 +516,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
                 if privileges is not None:
                     # Only process privileges that we have permission to set
                     privileges = [
-                        p for p in privileges if p in conn.getCurrentAdminPrivileges()
+                        p
+                        for p in privileges
+                        if p in conn.getCurrentAdminPrivileges()
                     ]
                 # Create a User, Restricted-Admin or Admin, based on privileges
                 conn.createExperimenter(
@@ -569,7 +592,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
         )
         password_form = ChangePassword()
 
-        admin_groups = [conn.getAdminService().getSecurityRoles().systemGroupId]
+        admin_groups = [
+            conn.getAdminService().getSecurityRoles().systemGroupId
+        ]
         context = {
             "form": form,
             "eid": eid,
@@ -589,16 +614,24 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
         if request.method != "POST":
             return HttpResponseRedirect(
                 reverse(
-                    viewname="wamanageexperimenterid", args=["edit", experimenter.id]
+                    viewname="wamanageexperimenterid",
+                    args=["edit", experimenter.id],
                 )
             )
         else:
             name_check = conn.checkOmeName(
                 request.POST.get("omename"), experimenter.omeName
             )
-            email_check = conn.checkEmail(request.POST.get("email"), experimenter.email)
-            my_groups = getSelectedGroups(conn, request.POST.getlist("other_groups"))
-            initial = {"my_groups": my_groups, "groups": otherGroupsInitialList(groups)}
+            email_check = conn.checkEmail(
+                request.POST.get("email"), experimenter.email
+            )
+            my_groups = getSelectedGroups(
+                conn, request.POST.getlist("other_groups")
+            )
+            initial = {
+                "my_groups": my_groups,
+                "groups": otherGroupsInitialList(groups),
+            }
             form = ExperimenterForm(
                 can_modify_user=can_modify_user,
                 user_privileges=user_privileges,
@@ -609,7 +642,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
             )
 
             if form.is_valid():
-                logger.debug("Update experimenter form:" + str(form.cleaned_data))
+                logger.debug(
+                    "Update experimenter form:" + str(form.cleaned_data)
+                )
                 omename = form.cleaned_data["omename"]
                 firstName = form.cleaned_data["first_name"]
                 middleName = form.cleaned_data["middle_name"]
@@ -659,7 +694,9 @@ def manage_experimenter(request, action, eid=None, conn=None, **kwargs):
                             to_add.append(p)
                         else:
                             to_remove.append(p)
-                    conn.updateAdminPrivileges(experimenter.id, to_add, to_remove)
+                    conn.updateAdminPrivileges(
+                        experimenter.id, to_add, to_remove
+                    )
 
                 conn.updateExperimenter(
                     experimenter,
@@ -713,12 +750,15 @@ def manage_password(request, eid, conn=None, **kwargs):
             elif conn.isAdmin():
                 exp = conn.getObject("Experimenter", eid)
                 try:
-                    conn.changeUserPassword(exp.omeName, password, old_password)
+                    conn.changeUserPassword(
+                        exp.omeName, password, old_password
+                    )
                 except Exception as x:
                     error = x.message
             else:
                 raise AttributeError(
-                    "Can't change another user's password" " unless you are an Admin"
+                    "Can't change another user's password"
+                    " unless you are an Admin"
                 )
 
     context = {"error": error, "password_form": password_form, "eid": eid}
@@ -733,7 +773,9 @@ def groups(request, conn=None, **kwargs):
 
     groups = conn.getObjects("ExperimenterGroup")
     can_modify_group = "ModifyGroup" in conn.getCurrentAdminPrivileges()
-    can_add_member = "ModifyGroupMembership" in conn.getCurrentAdminPrivileges()
+    can_add_member = (
+        "ModifyGroupMembership" in conn.getCurrentAdminPrivileges()
+    )
 
     context = {
         "groups": groups,
@@ -843,7 +885,8 @@ def manage_group(request, action, gid=None, conn=None, **kwargs):
                     except omero.SecurityViolation as ex:
                         if ex.message.startswith("Cannot change permissions"):
                             msgs.append(
-                                "Downgrade to private group not" " currently possible"
+                                "Downgrade to private group not"
+                                " currently possible"
                             )
                         else:
                             msgs.append(ex.message)
@@ -866,7 +909,9 @@ def manage_group(request, action, gid=None, conn=None, **kwargs):
                 # If we've failed to remove user...
                 # prepare error messages
                 for e in removalFails:
-                    url = reverse("wamanageexperimenterid", args=["edit", e.id])
+                    url = reverse(
+                        "wamanageexperimenterid", args=["edit", e.id]
+                    )
                     msgs.append(
                         "Can't remove user <a href='%s'>%s</a> from"
                         " their only group" % (url, e.getFullName())
@@ -921,7 +966,12 @@ def manage_group_owner(request, action, gid, conn=None, **kwargs):
                 "experimenters": experimenters,
             }
         )
-        context = {"form": form, "gid": gid, "permissions": permissions, "group": group}
+        context = {
+            "form": form,
+            "gid": gid,
+            "permissions": permissions,
+            "group": group,
+        }
 
         experimenterDefaultIds = list()
         for e in experimenters:
@@ -943,11 +993,14 @@ def manage_group_owner(request, action, gid, conn=None, **kwargs):
 
         if request.method != "POST":
             return HttpResponseRedirect(
-                reverse(viewname="wamanagegroupownerid", args=["edit", group.id])
+                reverse(
+                    viewname="wamanagegroupownerid", args=["edit", group.id]
+                )
             )
         else:
             form = GroupOwnerForm(
-                data=request.POST.copy(), initial={"experimenters": experimenters}
+                data=request.POST.copy(),
+                initial={"experimenters": experimenters},
             )
             if form.is_valid():
                 members = form.cleaned_data["members"]
@@ -970,7 +1023,8 @@ def manage_group_owner(request, action, gid, conn=None, **kwargs):
                     except omero.SecurityViolation as ex:
                         if ex.message.startswith("Cannot change permissions"):
                             msgs.append(
-                                "Downgrade to private group not" " currently possible"
+                                "Downgrade to private group not"
+                                " currently possible"
                             )
                         else:
                             msgs.append(ex.message)
@@ -980,7 +1034,9 @@ def manage_group_owner(request, action, gid, conn=None, **kwargs):
                 # If we've failed to remove user...
                 # prepare error messages
                 for e in removalFails:
-                    url = reverse("wamanageexperimenterid", args=["edit", e.id])
+                    url = reverse(
+                        "wamanageexperimenterid", args=["edit", e.id]
+                    )
                     msgs.append(
                         "Can't remove user <a href='%s'>%s</a> from"
                         " their only group" % (url, e.getFullName())
@@ -1025,9 +1081,13 @@ def my_account(request, action=None, conn=None, **kwargs):
     form = None
     if action == "save":
         if request.method != "POST":
-            return HttpResponseRedirect(reverse(viewname="wamyaccount", args=["edit"]))
+            return HttpResponseRedirect(
+                reverse(viewname="wamyaccount", args=["edit"])
+            )
         else:
-            email_check = conn.checkEmail(request.POST.get("email"), experimenter.email)
+            email_check = conn.checkEmail(
+                request.POST.get("email"), experimenter.email
+            )
             form = MyAccountForm(
                 data=request.POST.copy(),
                 initial={"groups": otherGroups},
@@ -1099,7 +1159,8 @@ def manage_avatar(request, action=None, conn=None, **kwargs):
                 attach_photo(conn, request.FILES["photo"])
                 return HttpResponseRedirect(
                     reverse(
-                        viewname="wamanageavatar", args=[conn.getEventContext().userId]
+                        viewname="wamanageavatar",
+                        args=[conn.getEventContext().userId],
                     )
                 )
     elif action == "crop":
@@ -1119,7 +1180,11 @@ def manage_avatar(request, action=None, conn=None, **kwargs):
         return HttpResponseRedirect(reverse("wamyaccount"))
 
     photo_size = conn.getExperimenterPhotoSize()
-    context = {"form_file": form_file, "edit_mode": edit_mode, "photo_size": photo_size}
+    context = {
+        "form_file": form_file,
+        "edit_mode": edit_mode,
+        "photo_size": photo_size,
+    }
     context["template"] = template
     return context
 
@@ -1164,7 +1229,11 @@ def email(request, conn=None, **kwargs):
     if request.method == "POST":  # If the form has been submitted...
         # ContactForm was defined in the the previous section
         form = EmailForm(
-            experimenter_list, group_list, conn, request, data=request.POST.copy()
+            experimenter_list,
+            group_list,
+            conn,
+            request,
+            data=request.POST.copy(),
         )
         if form.is_valid():  # All validation rules pass
             subject = form.cleaned_data["subject"]
@@ -1192,7 +1261,9 @@ def email(request, conn=None, **kwargs):
                     "start_time": datetime.datetime.now(),
                 }
             form = EmailForm(experimenter_list, group_list, conn, request)
-            context["non_field_errors"] = "Email sent." " Check status in activities."
+            context["non_field_errors"] = (
+                "Email sent." " Check status in activities."
+            )
         else:
             context["non_field_errors"] = "Email wasn't sent."
 

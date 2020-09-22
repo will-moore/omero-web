@@ -186,7 +186,8 @@ class GroupModelMultipleChoiceField(GroupModelChoiceField):
     default_error_messages = {
         "list": _("Enter a list of values."),
         "invalid_choice": _(
-            "Select a valid choice. That choice is not one" " of the available choices."
+            "Select a valid choice. That choice is not one"
+            " of the available choices."
         ),
     }
 
@@ -236,7 +237,9 @@ class GroupModelMultipleChoiceField(GroupModelChoiceField):
                         if long(val) == q.id:
                             res = True
                 if not res:
-                    raise ValidationError(self.error_messages["invalid_choice"])
+                    raise ValidationError(
+                        self.error_messages["invalid_choice"]
+                    )
                 else:
                     final_values.append(val)
         return final_values
@@ -304,7 +307,12 @@ class ExperimenterQuerySetIterator(object):
                         omeName,
                     )
                 else:
-                    name = "%s%s %s (%s)" % (myself, firstName, lastName, omeName)
+                    name = "%s%s %s (%s)" % (
+                        myself,
+                        firstName,
+                        lastName,
+                        omeName,
+                    )
 
             length = len(name)
             if length > 50:
@@ -387,7 +395,8 @@ class ExperimenterModelMultipleChoiceField(ExperimenterModelChoiceField):
     default_error_messages = {
         "list": _("Enter a list of values."),
         "invalid_choice": _(
-            "Select a valid choice. That choice is not one" " of the available choices."
+            "Select a valid choice. That choice is not one"
+            " of the available choices."
         ),
     }
 
@@ -437,7 +446,9 @@ class ExperimenterModelMultipleChoiceField(ExperimenterModelChoiceField):
                         if long(val) == q.id:
                             res = True
                 if not res:
-                    raise ValidationError(self.error_messages["invalid_choice"])
+                    raise ValidationError(
+                        self.error_messages["invalid_choice"]
+                    )
                 else:
                     final_values.append(val)
         return final_values
@@ -450,7 +461,8 @@ class DefaultGroupField(ChoiceField):
         """
         if not value:
             raise forms.ValidationError(
-                "Choose one of the 'Selected groups'" " to specify 'Default Group'."
+                "Choose one of the 'Selected groups'"
+                " to specify 'Default Group'."
             )
 
         # Always return the cleaned data.

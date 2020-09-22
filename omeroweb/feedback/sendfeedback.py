@@ -57,7 +57,9 @@ class SendFeedback(object):
     def __init__(self, feedback_url):
         self.url = urljoin(feedback_url, "/qa/initial/")
 
-    def send_feedback(self, error=None, comment=None, email=None, user_agent=""):
+    def send_feedback(
+        self, error=None, comment=None, email=None, user_agent=""
+    ):
         try:
             p = {
                 "app_name": settings.FEEDBACK_APP,
@@ -102,7 +104,9 @@ class SendFeedback(object):
                     logger.info(response.read())
                 else:
                     logger.error("Feedback server error: %s" % response.reason)
-                    raise Exception("Feedback server error: %s" % response.reason)
+                    raise Exception(
+                        "Feedback server error: %s" % response.reason
+                    )
             except HTTPError as e:
                 logger.error(traceback.format_exc())
                 raise Exception("Feedback server error: %s" % e.code)

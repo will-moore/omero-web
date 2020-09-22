@@ -150,7 +150,9 @@ def zip_archived_files(images, temp, zipName, buf=2621440):
             # check if ANY of the files will overwrite exising file
             for f in files:
                 target_path = getTargetPath(f, templatePrefix)
-                base_file = os.path.join(temp_zip_dir, split_path(target_path)[0])
+                base_file = os.path.join(
+                    temp_zip_dir, split_path(target_path)[0]
+                )
                 if os.path.exists(base_file):
                     new_dir = str(new_dir_idx)
                     new_dir_idx += 1
@@ -208,7 +210,12 @@ def xy_list_to_bbox(xyList):
         x, y = xy
         xList.append(x)
         yList.append(y)
-    return (min(xList), min(yList), max(xList) - min(xList), max(yList) - min(yList))
+    return (
+        min(xList),
+        min(yList),
+        max(xList) - min(xList),
+        max(yList) - min(yList),
+    )
 
 
 def points_string_to_XY_list(string):
@@ -225,7 +232,9 @@ def points_string_to_XY_list(string):
         if len(pointLists) == 1 and pointLists[0]:
             xys = pointLists[0].split(" ")
             xyList = [
-                tuple(map(float, xy.strip(",").split(","))) for xy in xys if len(xy) > 0
+                tuple(map(float, xy.strip(",").split(",")))
+                for xy in xys
+                if len(xy) > 0
             ]
             return xyList
 

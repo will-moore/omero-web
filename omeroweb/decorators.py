@@ -210,7 +210,9 @@ class login_required(object):
         except KeyError:
             pass
         except Exception:
-            logger.error("Error while redirection on not logged in.", exc_info=True)
+            logger.error(
+                "Error while redirection on not logged in.", exc_info=True
+            )
 
         args = {"url": url}
 
@@ -218,7 +220,9 @@ class login_required(object):
             "Request is not Ajax, redirecting to %s?%s"
             % (self.login_url, urlencode(args))
         )
-        return HttpResponseRedirect("%s?%s" % (self.login_url, urlencode(args)))
+        return HttpResponseRedirect(
+            "%s?%s" % (self.login_url, urlencode(args))
+        )
 
     def on_logged_in(self, request, conn):
         """
@@ -280,7 +284,9 @@ class login_required(object):
             if settings.PUBLIC_GET_ONLY and (request.method != "GET"):
                 return False
             if self.allowPublic is None:
-                return settings.PUBLIC_URL_FILTER.search(request.path) is not None
+                return (
+                    settings.PUBLIC_URL_FILTER.search(request.path) is not None
+                )
             return self.allowPublic
         return False
 
@@ -303,7 +309,9 @@ class login_required(object):
             except Exception:
                 logger.error(traceback.format_exc())
             # make extra call for omero.mail, not a part of omero.client
-            request.session["server_settings"]["email"] = conn.getEmailSettings()
+            request.session["server_settings"][
+                "email"
+            ] = conn.getEmailSettings()
 
     def get_public_user_connector(self):
         """
@@ -316,10 +324,15 @@ class login_required(object):
 
     def set_public_user_connector(self, connector):
         """Sets the current cached OMERO.webpublic connector."""
-        if not settings.PUBLIC_CACHE_ENABLED or connector.omero_session_key is None:
+        if (
+            not settings.PUBLIC_CACHE_ENABLED
+            or connector.omero_session_key is None
+        ):
             return
         logger.debug("Setting OMERO.webpublic connector: %r" % connector)
-        cache.set(settings.PUBLIC_CACHE_KEY, connector, settings.PUBLIC_CACHE_TIMEOUT)
+        cache.set(
+            settings.PUBLIC_CACHE_KEY, connector, settings.PUBLIC_CACHE_TIMEOUT
+        )
 
     def get_connection(self, server_id, request):
         """
@@ -350,7 +363,9 @@ class login_required(object):
                     "Attempting to use cached OMERO.webpublic "
                     "connector: %r" % public_user_connector
                 )
-                connection = public_user_connector.join_connection(self.useragent)
+                connection = public_user_connector.join_connection(
+                    self.useragent
+                )
                 if connection is not None:
                     request.session["connector"] = public_user_connector
                     logger.debug(
@@ -359,7 +374,8 @@ class login_required(object):
                     )
                     return connection
                 logger.debug(
-                    "Attempt to use cached OMERO.web public " "session key failed."
+                    "Attempt to use cached OMERO.web public "
+                    "session key failed."
                 )
             # We don't have a cached OMERO.webpublic user session key,
             # create a new connection based on the credentials we've been
@@ -431,7 +447,8 @@ class login_required(object):
             # We have an OMERO session key in the current request use it
             # to try join an existing connection / OMERO session.
             logger.debug(
-                "Have OMERO session key %s, attempting to join..." % omero_session_key
+                "Have OMERO session key %s, attempting to join..."
+                % omero_session_key
             )
             connector.user_id = None
             connector.omero_session_key = omero_session_key
@@ -524,7 +541,9 @@ class login_required(object):
                     ctx.load_server_settings(conn, request)
 
                     share_id = kwargs.get("share_id")
-                    conn_share = ctx.prepare_share_connection(request, conn, share_id)
+                    conn_share = ctx.prepare_share_connection(
+                        request, conn, share_id
+                    )
                     if conn_share is not None:
                         ctx.on_share_connection_prepared(request, conn_share)
                         kwargs["conn"] = conn_share
@@ -538,7 +557,9 @@ class login_required(object):
                 retval = f(request, *args, **kwargs)
             finally:
                 # If f() raised Exception, e.g. Http404() we must still cleanup
-                delayConnectionCleanup = isinstance(retval, ConnCleaningHttpResponse)
+                delayConnectionCleanup = isinstance(
+                    retval, ConnCleaningHttpResponse
+                )
                 if doConnectionCleanup and delayConnectionCleanup:
                     raise ApiUsageException(
                         "Methods that return a"
@@ -546,7 +567,9 @@ class login_required(object):
                         " @login_required(doConnectionCleanup=False)"
                     )
                 doConnectionCleanup = not delayConnectionCleanup
-                logger.debug("Doing connection cleanup? %s" % doConnectionCleanup)
+                logger.debug(
+                    "Doing connection cleanup? %s" % doConnectionCleanup
+                )
                 try:
                     if doConnectionCleanup:
                         if conn is not None and conn.c is not None:

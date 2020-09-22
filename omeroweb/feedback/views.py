@@ -81,10 +81,14 @@ def send_feedback(request):
             logger.error("handler500: Feedback could not be sent")
             logger.error(traceback.format_exc())
             error = (
-                "Feedback could not be sent. Please contact" " administrator. %s" % e
+                "Feedback could not be sent. Please contact"
+                " administrator. %s" % e
             )
             fileObj = open(
-                ("%s/error500-%s.html" % (settings.LOGDIR, datetime.datetime.now())),
+                (
+                    "%s/error500-%s.html"
+                    % (settings.LOGDIR, datetime.datetime.now())
+                ),
                 "w",
             )
             try:
@@ -122,12 +126,17 @@ def send_comment(request):
             try:
                 sf = SendFeedback(settings.FEEDBACK_URL)
                 sf.send_feedback(
-                    comment=comment, email=email, user_agent=get_user_agent(request)
+                    comment=comment,
+                    email=email,
+                    user_agent=get_user_agent(request),
                 )
             except Exception:
                 logger.error("handler500: Feedback could not be sent")
                 logger.error(traceback.format_exc())
-                error = "Feedback could not be sent." " Please contact administrator."
+                error = (
+                    "Feedback could not be sent."
+                    " Please contact administrator."
+                )
             else:
                 return HttpResponseRedirect(reverse("fthanks"))
 
@@ -197,7 +206,8 @@ def handler500(request):
 
 def handler404(request, exception=None):
     logger.warning(
-        "Not Found: %s" % request.path, extra={"status_code": 404, "request": request}
+        "Not Found: %s" % request.path,
+        extra={"status_code": 404, "request": request},
     )
     if request.is_ajax():
         msg = traceback.format_exception(*sys.exc_info())[-1]

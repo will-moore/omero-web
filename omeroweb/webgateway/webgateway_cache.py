@@ -283,7 +283,11 @@ class FileCache(CacheBase):
         # Check nr of entries
         if self._max_entries:
             try:
-                x = int(os.popen("find %s -type f | wc -l" % self._dir).read().strip())
+                x = int(
+                    os.popen("find %s -type f | wc -l" % self._dir)
+                    .read()
+                    .strip()
+                )
                 if x >= self._max_entries:
                     if not _on_retry:
                         self._purge()
@@ -455,7 +459,8 @@ class WebGatewayCache(object):
                  otherwise.
         """
         lockfile = os.path.join(
-            self._basedir, "%s_lock" % datetime.datetime.now().strftime("%Y%m%d_%H%M")
+            self._basedir,
+            "%s_lock" % datetime.datetime.now().strftime("%Y%m%d_%H%M"),
         )
         if self._lastlock:
             if lockfile == self._lastlock:
@@ -573,7 +578,12 @@ class WebGatewayCache(object):
                 "x".join([str(x) for x in size]),
             )
         else:
-            return "thumb_user_%s/%s/%s/%s" % (client_base, pre, str(iid), user_id)
+            return "thumb_user_%s/%s/%s/%s" % (
+                client_base,
+                pre,
+                str(iid),
+                user_id,
+            )
 
     def setThumb(self, r, client_base, user_id, iid, obj, size=()):
         """
@@ -787,7 +797,12 @@ class WebGatewayCache(object):
         """
 
         if obj:
-            return "json_%s/%s_%s/%s" % (client_base, obj.OMERO_CLASS, obj.id, ctx)
+            return "json_%s/%s_%s/%s" % (
+                client_base,
+                obj.OMERO_CLASS,
+                obj.id,
+                ctx,
+            )
         else:
             return "json_%s/single/%s" % (client_base, ctx)
 
@@ -945,7 +960,9 @@ class WebGatewayTempFile(object):
                 else:
                     ft = float(f) + TMPDIR_TIME
                 if ft < now:
-                    shutil.rmtree(os.path.join(self._dir, f), ignore_errors=True)
+                    shutil.rmtree(
+                        os.path.join(self._dir, f), ignore_errors=True
+                    )
             except ValueError:
                 continue
 

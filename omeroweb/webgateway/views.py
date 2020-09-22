@@ -71,7 +71,10 @@ import tempfile
 
 from omero import ApiUsageException
 from omero.util.decorators import timeit, TimeIt
-from omeroweb.httprsp import HttpJavascriptResponse, HttpJavascriptResponseServerError
+from omeroweb.httprsp import (
+    HttpJavascriptResponse,
+    HttpJavascriptResponseServerError,
+)
 from omeroweb.connector import Server
 
 import glob
@@ -340,7 +343,9 @@ def render_birds_eye_view(request, iid, size=None, conn=None, **kwargs):
     return render_thumbnail(request, iid, w=size, **kwargs)
 
 
-def _render_thumbnail(request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs):
+def _render_thumbnail(
+    request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs
+):
     """
     Returns a jpeg with the rendered thumbnail for image 'iid'
 
@@ -352,7 +357,9 @@ def _render_thumbnail(request, iid, w=None, h=None, conn=None, _defcb=None, **kw
     """
     server_id = request.session["connector"].server_id
 
-    server_settings = request.session.get("server_settings", {}).get("browser", {})
+    server_settings = request.session.get("server_settings", {}).get(
+        "browser", {}
+    )
     defaultSize = server_settings.get("thumb_default_size", 96)
 
     direct = True
@@ -370,7 +377,9 @@ def _render_thumbnail(request, iid, w=None, h=None, conn=None, _defcb=None, **kw
     t = getIntOrDefault(request, "t", None)
     rdefId = getIntOrDefault(request, "rdefId", None)
     # TODO - cache handles rdefId
-    jpeg_data = webgateway_cache.getThumb(request, server_id, user_id, iid, size)
+    jpeg_data = webgateway_cache.getThumb(
+        request, server_id, user_id, iid, size
+    )
     if jpeg_data is None:
         prevent_cache = False
         img = conn.getObject("Image", iid)
@@ -395,14 +404,18 @@ def _render_thumbnail(request, iid, w=None, h=None, conn=None, _defcb=None, **kw
             else:
                 prevent_cache = img._thumbInProgress
         if not prevent_cache:
-            webgateway_cache.setThumb(request, server_id, user_id, iid, jpeg_data, size)
+            webgateway_cache.setThumb(
+                request, server_id, user_id, iid, jpeg_data, size
+            )
     else:
         pass
     return jpeg_data
 
 
 @login_required()
-def render_thumbnail(request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs):
+def render_thumbnail(
+    request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs
+):
     """
     Returns an HttpResponse wrapped jpeg with the rendered thumbnail for image
     'iid'
@@ -430,7 +443,9 @@ def render_roi_thumbnail(request, roiId, w=None, h=None, conn=None, **kwargs):
     server_id = request.session["connector"].server_id
 
     # need to find the z indices of the first shape in T
-    result = conn.getRoiService().findByRoi(long(roiId), None, conn.SERVICE_OPTS)
+    result = conn.getRoiService().findByRoi(
+        long(roiId), None, conn.SERVICE_OPTS
+    )
     if result is None or result.rois is None or len(result.rois) == 0:
         raise Http404
 
@@ -466,7 +481,8 @@ def render_roi_thumbnail(request, roiId, w=None, h=None, conn=None, **kwargs):
             def_shapes = [
                 s
                 for s in def_shapes
-                if unwrap(s.getTheZ()) is None or unwrap(s.getTheZ()) == default_z
+                if unwrap(s.getTheZ()) is None
+                or unwrap(s.getTheZ()) == default_z
             ]
             if len(def_shapes) > 0:
                 shape = def_shapes[0]
@@ -478,7 +494,9 @@ def render_roi_thumbnail(request, roiId, w=None, h=None, conn=None, **kwargs):
 
 
 @login_required()
-def render_shape_thumbnail(request, shapeId, w=None, h=None, conn=None, **kwargs):
+def render_shape_thumbnail(
+    request, shapeId, w=None, h=None, conn=None, **kwargs
+):
     """
     For the given Shape, redner a region around that shape, scale to width and
     height (or default size) and draw the shape on to the region.
@@ -635,7 +653,11 @@ def get_shape_thumbnail(request, conn, image, s, compress_quality):
         # generate dummy image to return
         dummy = Image.new("RGB", (MAX_WIDTH, MAX_WIDTH * 2 // 3), bg_color)
         draw = ImageDraw.Draw(dummy)
-        draw.text((10, 30), "Shape too large to \ngenerate thumbnail", fill=(255, 0, 0))
+        draw.text(
+            (10, 30),
+            "Shape too large to \ngenerate thumbnail",
+            fill=(255, 0, 0),
+        )
         rv = BytesIO()
         dummy.save(rv, "jpeg", quality=90)
         return HttpResponse(rv.getvalue(), content_type="image/jpeg")
@@ -667,7 +689,14 @@ def get_shape_thumbnail(request, conn, image, s, compress_quality):
 
     # now we should be getting the correct region
     jpeg_data = image.renderJpegRegion(
-        theZ, theT, newX, newY, newW, newH, level=None, compression=compress_quality
+        theZ,
+        theT,
+        newX,
+        newY,
+        newW,
+        newH,
+        level=None,
+        compression=compress_quality,
     )
     img = Image.open(BytesIO(jpeg_data))
 
@@ -694,7 +723,9 @@ def get_shape_thumbnail(request, conn, image, s, compress_quality):
         rectH = int((h + yOffset) * factor)
         draw.rectangle((rectX, rectY, rectW, rectH), outline=lineColour)
         # hack to get line width of 2
-        draw.rectangle((rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour)
+        draw.rectangle(
+            (rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour
+        )
     elif shape["type"] == "Line":
         lineX1 = (shape["x1"] - newX + left_xs) * factor
         lineX2 = (shape["x2"] - newX + left_xs) * factor
@@ -708,7 +739,9 @@ def get_shape_thumbnail(request, conn, image, s, compress_quality):
         rectH = int((h + yOffset) * factor)
         draw.ellipse((rectX, rectY, rectW, rectH), outline=lineColour)
         # hack to get line width of 2
-        draw.ellipse((rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour)
+        draw.ellipse(
+            (rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour
+        )
     elif shape["type"] == "Point":
         point_radius = 2
         rectX = (MAX_WIDTH // 2) - point_radius
@@ -717,7 +750,9 @@ def get_shape_thumbnail(request, conn, image, s, compress_quality):
         rectH = rectY + (point_radius * 2)
         draw.ellipse((rectX, rectY, rectW, rectH), outline=lineColour)
         # hack to get line width of 2
-        draw.ellipse((rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour)
+        draw.ellipse(
+            (rectX - 1, rectY - 1, rectW + 1, rectH + 1), outline=lineColour
+        )
     elif "xyList" in shape:
         # resizedXY = [(int(x*factor), int(y*factor))
         #              for (x,y) in shape['xyList']]
@@ -887,7 +922,8 @@ def _get_prepared_image(
         # invert is True if 'invert' OR 'reverse' is enabled
         if reverses is not None and invert_flags is not None:
             invert_flags = [
-                z[0] if z[0] is not None else z[1] for z in zip(invert_flags, reverses)
+                z[0] if z[0] is not None else z[1]
+                for z in zip(invert_flags, reverses)
             ]
         try:
             # quantization maps (just applied, not saved at the moment)
@@ -904,10 +940,16 @@ def _get_prepared_image(
         if saveDefs and not img.setActiveChannels(
             allchannels, windows, colors, invert_flags
         ):
-            logger.debug("Something bad happened while setting the active channels...")
+            logger.debug(
+                "Something bad happened while setting the active channels..."
+            )
         # Save the active/inactive state of the channels
-        if not img.setActiveChannels(activechannels, windows, colors, invert_flags):
-            logger.debug("Something bad happened while setting the active channels...")
+        if not img.setActiveChannels(
+            activechannels, windows, colors, invert_flags
+        ):
+            logger.debug(
+                "Something bad happened while setting the active channels..."
+            )
 
     if r.get("m", None) == "g":
         img.setGreyscaleRenderingModel()
@@ -1105,7 +1147,10 @@ def render_image(request, iid, z=None, t=None, conn=None, **kwargs):
         fileName = fileName.replace(",", ".").replace(" ", "_")
         rsp["Content-Type"] = "application/force-download"
         rsp["Content-Length"] = len(jpeg_data)
-        rsp["Content-Disposition"] = "attachment; filename=%s.%s" % (fileName, format)
+        rsp["Content-Disposition"] = "attachment; filename=%s.%s" % (
+            fileName,
+            format,
+        )
     return rsp
 
 
@@ -1144,7 +1189,9 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
         if obj is None:
             raise Http404
         imgs.extend(list(obj.listChildren()))
-        selection = list(filter(None, request.GET.get("selection", "").split(",")))
+        selection = list(
+            filter(None, request.GET.get("selection", "").split(","))
+        )
         if len(selection) > 0:
             logger.debug(selection)
             logger.debug(imgs)
@@ -1163,7 +1210,11 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
             plate.getRowLabels()[obj.row],
             plate.getColumnLabels()[obj.column],
         )
-        name = "%s-%s-%s" % (plate.getParent().getName(), plate.getName(), coord)
+        name = "%s-%s-%s" % (
+            plate.getParent().getName(),
+            plate.getName(),
+            coord,
+        )
     else:
         obj = conn.getObject("Image", cid)
         if obj is None:
@@ -1199,7 +1250,9 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
             return HttpResponseRedirect(
                 settings.STATIC_URL + "webgateway/tfiles/" + rpath
             )
-        tiff_data = webgateway_cache.getOmeTiffImage(request, server_id, imgs[0])
+        tiff_data = webgateway_cache.getOmeTiffImage(
+            request, server_id, imgs[0]
+        )
         if tiff_data is None:
             try:
                 tiff_data = imgs[0].exportOmeTiff()
@@ -1209,10 +1262,14 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
             if tiff_data is None:
                 webgateway_tempfile.abort(fpath)
                 raise Http404
-            webgateway_cache.setOmeTiffImage(request, server_id, imgs[0], tiff_data)
+            webgateway_cache.setOmeTiffImage(
+                request, server_id, imgs[0], tiff_data
+            )
         if fobj is None:
             rsp = HttpResponse(tiff_data, content_type="image/tiff")
-            rsp["Content-Disposition"] = 'attachment; filename="%s.ome.tiff"' % (
+            rsp[
+                "Content-Disposition"
+            ] = 'attachment; filename="%s.ome.tiff"' % (
                 str(obj.getId()) + "-" + objname
             )
             rsp["Content-Length"] = len(tiff_data)
@@ -1232,7 +1289,9 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
                 + md5(img_ids).hexdigest()
                 + "_ome_tiff_zip"
             )
-            fpath, rpath, fobj = webgateway_tempfile.new(name + ".zip", key=key)
+            fpath, rpath, fobj = webgateway_tempfile.new(
+                name + ".zip", key=key
+            )
             if fobj is True:
                 return HttpResponseRedirect(
                     settings.STATIC_URL + "webgateway/tfiles/" + rpath
@@ -1242,30 +1301,40 @@ def render_ome_tiff(request, ctx, cid, conn=None, **kwargs):
                 fobj = BytesIO()
             zobj = zipfile.ZipFile(fobj, "w", zipfile.ZIP_STORED)
             for obj in imgs:
-                tiff_data = webgateway_cache.getOmeTiffImage(request, server_id, obj)
+                tiff_data = webgateway_cache.getOmeTiffImage(
+                    request, server_id, obj
+                )
                 if tiff_data is None:
                     tiff_data = obj.exportOmeTiff()
                     if tiff_data is None:
                         continue
-                    webgateway_cache.setOmeTiffImage(request, server_id, obj, tiff_data)
+                    webgateway_cache.setOmeTiffImage(
+                        request, server_id, obj, tiff_data
+                    )
                 # While ZIP itself doesn't have the 255 char limit for
                 # filenames, the FS where these get unarchived might, so trim
                 # names
                 # total name len <= 255, 9 is for .ome.tiff
                 fnamemax = 255 - len(str(obj.getId())) - 10
                 objname = obj.getName()[:fnamemax]
-                zobj.writestr(str(obj.getId()) + "-" + objname + ".ome.tiff", tiff_data)
+                zobj.writestr(
+                    str(obj.getId()) + "-" + objname + ".ome.tiff", tiff_data
+                )
             zobj.close()
             if fpath is None:
                 zip_data = fobj.getvalue()
                 rsp = HttpResponse(zip_data, content_type="application/zip")
-                rsp["Content-Disposition"] = 'attachment; filename="%s.zip"' % name
+                rsp["Content-Disposition"] = (
+                    'attachment; filename="%s.zip"' % name
+                )
                 rsp["Content-Length"] = len(zip_data)
                 return rsp
         except Exception:
             logger.debug(traceback.format_exc())
             raise
-        return HttpResponseRedirect(settings.STATIC_URL + "webgateway/tfiles/" + rpath)
+        return HttpResponseRedirect(
+            settings.STATIC_URL + "webgateway/tfiles/" + rpath
+        )
 
 
 @login_required()
@@ -1305,7 +1374,9 @@ def render_movie(request, iid, axis, pos, conn=None, **kwargs):
             raise Http404
         img, compress_quality = pi
 
-        fpath, rpath, fobj = webgateway_tempfile.new(img.getName() + ext, key=key)
+        fpath, rpath, fobj = webgateway_tempfile.new(
+            img.getName() + ext, key=key
+        )
         logger.debug(fpath, rpath, fobj)
         if fobj is True:
             return HttpResponseRedirect(
@@ -1379,12 +1450,16 @@ def render_split_channel(request, iid, z, t, conn=None, **kwargs):
         raise Http404
     img, compress_quality = pi
     compress_quality = compress_quality and float(compress_quality) or 0.9
-    jpeg_data = webgateway_cache.getSplitChannelImage(request, server_id, img, z, t)
+    jpeg_data = webgateway_cache.getSplitChannelImage(
+        request, server_id, img, z, t
+    )
     if jpeg_data is None:
         jpeg_data = img.renderSplitChannel(z, t, compression=compress_quality)
         if jpeg_data is None:
             raise Http404
-        webgateway_cache.setSplitChannelImage(request, server_id, img, z, t, jpeg_data)
+        webgateway_cache.setSplitChannelImage(
+            request, server_id, img, z, t, jpeg_data
+        )
     rsp = HttpResponse(jpeg_data, content_type="image/jpeg")
     return rsp
 
@@ -1610,7 +1685,9 @@ def plateGrid_json(request, pid, field=0, conn=None, **kwargs):
             return reverse(prefix, args=(iid, thumbsize))
         return reverse(prefix, args=(iid,))
 
-    plateGrid = PlateGrid(conn, pid, field, kwargs.get("urlprefix", get_thumb_url))
+    plateGrid = PlateGrid(
+        conn, pid, field, kwargs.get("urlprefix", get_thumb_url)
+    )
 
     plate = plateGrid.plate
     if plate is None:
@@ -1621,7 +1698,9 @@ def plateGrid_json(request, pid, field=0, conn=None, **kwargs):
 
     if rv is None:
         rv = plateGrid.metadata
-        webgateway_cache.setJson(request, server_id, plate, json.dumps(rv), cache_key)
+        webgateway_cache.setJson(
+            request, server_id, plate, json.dumps(rv), cache_key
+        )
     else:
         rv = json.loads(rv)
     return rv
@@ -1638,7 +1717,9 @@ def get_thumbnails_json(request, w=None, conn=None, **kwargs):
     @param w:           Thumbnail max width. 96 by default
     @return:            http response containing base64 encoded thumbnails
     """
-    server_settings = request.session.get("server_settings", {}).get("browser", {})
+    server_settings = request.session.get("server_settings", {}).get(
+        "browser", {}
+    )
     defaultSize = server_settings.get("thumb_default_size", 96)
     if w is None:
         w = defaultSize
@@ -1668,9 +1749,9 @@ def get_thumbnails_json(request, w=None, conn=None, **kwargs):
             t = thumbnails[i]
             if len(t) > 0:
                 # replace thumbnail urls by base64 encoded image
-                rv[i] = "data:image/jpeg;base64,%s" % base64.b64encode(t).decode(
-                    "utf-8"
-                )
+                rv[i] = "data:image/jpeg;base64,%s" % base64.b64encode(
+                    t
+                ).decode("utf-8")
         except KeyError:
             logger.error("Thumbnail not available. (img id: %d)" % i)
         except Exception:
@@ -1680,7 +1761,9 @@ def get_thumbnails_json(request, w=None, conn=None, **kwargs):
 
 @login_required()
 @jsonp
-def get_thumbnail_json(request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs):
+def get_thumbnail_json(
+    request, iid, w=None, h=None, conn=None, _defcb=None, **kwargs
+):
     """
     Returns an HttpResponse base64 encoded jpeg with the rendered thumbnail
     for image 'iid'
@@ -1694,7 +1777,9 @@ def get_thumbnail_json(request, iid, w=None, h=None, conn=None, _defcb=None, **k
     jpeg_data = _render_thumbnail(
         request=request, iid=iid, w=w, h=h, conn=conn, _defcb=_defcb, **kwargs
     )
-    rv = "data:image/jpeg;base64,%s" % base64.b64encode(jpeg_data).decode("utf-8")
+    rv = "data:image/jpeg;base64,%s" % base64.b64encode(jpeg_data).decode(
+        "utf-8"
+    )
     return rv
 
 
@@ -1792,7 +1877,9 @@ def listDatasets_json(request, pid, conn=None, **kwargs):
     project = conn.getObject("Project", pid)
     if project is None:
         return HttpJavascriptResponse("[]")
-    return [x.simpleMarshal(xtra={"childCount": 0}) for x in project.listChildren()]
+    return [
+        x.simpleMarshal(xtra={"childCount": 0}) for x in project.listChildren()
+    ]
 
 
 @login_required()
@@ -1820,7 +1907,9 @@ def listProjects_json(request, conn=None, **kwargs):
 
     rv = []
     for pr in conn.listProjects():
-        rv.append({"id": pr.id, "name": pr.name, "description": pr.description or ""})
+        rv.append(
+            {"id": pr.id, "name": pr.name, "description": pr.description or ""}
+        )
     return rv
 
 
@@ -1953,7 +2042,9 @@ def search_json(request, conn=None, **kwargs):
     xtra = {"thumbUrlPrefix": kwargs.get("urlprefix", urlprefix)}
     try:
         if opts["ctx"] == "imgs":
-            sr = conn.searchObjects(["image"], opts["search"], conn.SERVICE_OPTS)
+            sr = conn.searchObjects(
+                ["image"], opts["search"], conn.SERVICE_OPTS
+            )
         else:
             # searches P/D/I
             sr = conn.searchObjects(None, opts["search"], conn.SERVICE_OPTS)
@@ -1984,15 +2075,19 @@ def search_json(request, conn=None, **kwargs):
                     )
                 except AttributeError as x:
                     logger.debug(
-                        "(iid %i) ignoring Attribute Error: %s" % (e.id, str(x))
+                        "(iid %i) ignoring Attribute Error: %s"
+                        % (e.id, str(x))
                     )
                     pass
                 except omero.ServerError as x:
-                    logger.debug("(iid %i) ignoring Server Error: %s" % (e.id, str(x)))
+                    logger.debug(
+                        "(iid %i) ignoring Server Error: %s" % (e.id, str(x))
+                    )
             return rv
         else:
             return map(
-                lambda x: x.simpleMarshal(xtra=xtra, parents=opts["parents"]), sr
+                lambda x: x.simpleMarshal(xtra=xtra, parents=opts["parents"]),
+                sr,
             )
 
     rv = timeit(marshal)()
@@ -2353,7 +2448,8 @@ def get_image_rdef_json(request, conn=None, **kwargs):
             rdef = {
                 "c": (",".join(chs)),
                 "m": rv["rdefs"]["model"],
-                "pixel_range": "%s:%s" % (rv["pixel_range"][0], rv["pixel_range"][1]),
+                "pixel_range": "%s:%s"
+                % (rv["pixel_range"][0], rv["pixel_range"][1]),
                 "maps": maps,
             }
 
@@ -2379,7 +2475,9 @@ def full_viewer(request, iid, conn=None, **kwargs):
     server_name = Server.get(server_id).server
 
     rid = getImgDetailsFromReq(request)
-    server_settings = request.session.get("server_settings", {}).get("viewer", {})
+    server_settings = request.session.get("server_settings", {}).get(
+        "viewer", {}
+    )
     interpolate = server_settings.get("interpolate_pixels", True)
     roiLimit = server_settings.get("roi_limit", 2000)
 
@@ -2405,7 +2503,9 @@ def full_viewer(request, iid, conn=None, **kwargs):
         if opengraph or twitter:
             urlargs = {"iid": iid}
             prefix = kwargs.get("thumbprefix", "webgateway_render_thumbnail")
-            image_preview = request.build_absolute_uri(reverse(prefix, kwargs=urlargs))
+            image_preview = request.build_absolute_uri(
+                reverse(prefix, kwargs=urlargs)
+            )
             page_url = request.build_absolute_uri(
                 reverse("webgateway_full_viewer", kwargs=urlargs)
             )
@@ -2430,7 +2530,9 @@ def full_viewer(request, iid, conn=None, **kwargs):
             "object": "image:%i" % int(iid),
         }
 
-        template = kwargs.get("template", "webgateway/viewport/omero_image.html")
+        template = kwargs.get(
+            "template", "webgateway/viewport/omero_image.html"
+        )
         rsp = render(request, template, d)
     except omero.SecurityViolation:
         logger.warn("SecurityViolation in Image:%s", iid)
@@ -2475,7 +2577,10 @@ def download_as(request, iid=None, conn=None, **kwargs):
             images.append(w.getWellSample(index).image())
 
     if len(images) == 0:
-        msg = "Cannot download as %s. Images (ids: %s) not found." % (format, imgIds)
+        msg = "Cannot download as %s. Images (ids: %s) not found." % (
+            format,
+            imgIds,
+        )
         logger.debug(msg)
         return HttpResponseServerError(msg)
 
@@ -2511,7 +2616,9 @@ def download_as(request, iid=None, conn=None, **kwargs):
                     z = t = None
                     try:
                         pilImg = img.renderImage(z, t)
-                        imgPathName = makeImageName(img.getName(), format, temp_zip_dir)
+                        imgPathName = makeImageName(
+                            img.getName(), format, temp_zip_dir
+                        )
                         pilImg.save(imgPathName)
                     finally:
                         # Close RenderingEngine
@@ -2619,7 +2726,8 @@ def archived_files(request, iid=None, conn=None, **kwargs):
 
     if len(files) == 0:
         message = (
-            "Tried downloading archived files from image with no" " files archived."
+            "Tried downloading archived files from image with no"
+            " files archived."
         )
         logger.debug(message)
         return HttpResponseServerError(message)
@@ -2649,7 +2757,9 @@ def archived_files(request, iid=None, conn=None, **kwargs):
         zipName = request.GET.get("zipname", image.getName())
 
         try:
-            zipName = zip_archived_files(images, temp, zipName, buf=settings.CHUNK_SIZE)
+            zipName = zip_archived_files(
+                images, temp, zipName, buf=settings.CHUNK_SIZE
+            )
 
             # return the zip or single file
             archivedFile_data = FileWrapper(temp)
@@ -2723,7 +2833,9 @@ def get_rois_json(request, imageId, conn=None, **kwargs):
                 continue
             shapes.append(shapeMarshal(s))
         # sort shapes by Z, then T.
-        shapes.sort(key=lambda x: "%03d%03d" % (x.get("theZ", -1), x.get("theT", -1)))
+        shapes.sort(
+            key=lambda x: "%03d%03d" % (x.get("theZ", -1), x.get("theT", -1))
+        )
         roi["shapes"] = shapes
         rois.append(roi)
 
@@ -2746,9 +2858,12 @@ def histogram_json(request, iid, theC, conn=None, **kwargs):
     sizeX = image.getSizeX()
     sizeY = image.getSizeY()
     if (sizeX * sizeY) > (maxW * maxH):
-        msg = "Histogram not supported for 'big' images (over %s * %s pixels)" % (
-            maxW,
-            maxH,
+        msg = (
+            "Histogram not supported for 'big' images (over %s * %s pixels)"
+            % (
+                maxW,
+                maxH,
+            )
         )
         return JsonResponse({"error": msg})
 
@@ -2800,7 +2915,9 @@ def su(request, user, conn=None, **kwargs):
 
 
 def _annotations(request, objtype, objid, conn=None, **kwargs):
-    warnings.warn("Deprecated. Use _bulk_file_annotations()", DeprecationWarning)
+    warnings.warn(
+        "Deprecated. Use _bulk_file_annotations()", DeprecationWarning
+    )
     return _bulk_file_annotations(request, objtype, objid, conn, **kwargs)
 
 
@@ -2878,7 +2995,10 @@ def _bulk_file_annotations(request, objtype, objid, conn=None, **kwargs):
         owner = annotation.details.owner
         ownerName = "%s %s" % (unwrap(owner.firstName), unwrap(owner.lastName))
         addedBy = link.details.owner
-        addedByName = "%s %s" % (unwrap(addedBy.firstName), unwrap(addedBy.lastName))
+        addedByName = "%s %s" % (
+            unwrap(addedBy.firstName),
+            unwrap(addedBy.lastName),
+        )
         data.append(
             dict(
                 id=annotation.id.val,
@@ -2925,7 +3045,9 @@ def _table_query(request, fileid, conn=None, query=None, lazy=False, **kwargs):
     if query is None:
         query = request.GET.get("query")
     if not query:
-        return dict(error="Must specify query parameter, use * to retrieve all")
+        return dict(
+            error="Must specify query parameter, use * to retrieve all"
+        )
 
     ctx = conn.createServiceOptsDict()
     ctx.setOmeroGroup("-1")
@@ -2981,7 +3103,9 @@ def _table_query(request, fileid, conn=None, query=None, lazy=False, **kwargs):
                 for hit in h:
                     row_vals = [
                         col.values[0]
-                        for col in table.read(range(len(cols)), hit, hit + 1).columns
+                        for col in table.read(
+                            range(len(cols)), hit, hit + 1
+                        ).columns
                     ]
                     # yield a list of rows, with only a single row
                     yield [row_vals]
@@ -3092,7 +3216,9 @@ class LoginView(View):
     form_class = LoginForm
     useragent = "OMERO.webapi"
 
-    @method_decorator(sensitive_post_parameters("password", "csrfmiddlewaretoken"))
+    @method_decorator(
+        sensitive_post_parameters("password", "csrfmiddlewaretoken")
+    )
     def dispatch(self, *args, **kwargs):
         """Wrap other methods to add decorators."""
         return super(LoginView, self).dispatch(*args, **kwargs)
@@ -3100,7 +3226,12 @@ class LoginView(View):
     def get(self, request, api_version=None):
         """Simply return a message to say GET not supported."""
         return JsonResponse(
-            {"message": ("POST only with username, password, " "server and csrftoken")},
+            {
+                "message": (
+                    "POST only with username, password, "
+                    "server and csrftoken"
+                )
+            },
             status=405,
         )
 
@@ -3175,7 +3306,10 @@ class LoginView(View):
                 and compatible
             ):
                 conn = connector.create_connection(
-                    self.useragent, username, password, userip=get_client_ip(request)
+                    self.useragent,
+                    username,
+                    password,
+                    userip=get_client_ip(request),
                 )
                 if conn is not None:
                     try:
@@ -3194,7 +3328,10 @@ class LoginView(View):
             # Once here, we are not logged in...
             # Need correct error message
             if not connector.is_server_up(self.useragent):
-                error = "Server is not responding," " please contact administrator."
+                error = (
+                    "Server is not responding,"
+                    " please contact administrator."
+                )
             elif not settings.CHECK_VERSION:
                 error = (
                     "Connection not available, please check your"

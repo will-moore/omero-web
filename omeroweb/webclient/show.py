@@ -141,7 +141,9 @@ class Show(object):
         if object_type in self.SUPPORTED_OBJECT_TYPES:
             # 'run' is an alternative for 'acquisition'
             object_type = object_type.replace("run", "acquisition")
-            self._initially_select.append("%s.%s-%s" % (object_type, key, value))
+            self._initially_select.append(
+                "%s.%s-%s" % (object_type, key, value)
+            )
 
     def _load_tag(self, attributes):
         """
@@ -152,7 +154,9 @@ class Show(object):
         """
         # Tags have an "Annotation" suffix added to the object name so
         # need to be loaded differently.
-        return next(self.conn.getObjects("TagAnnotation", attributes=attributes))
+        return next(
+            self.conn.getObjects("TagAnnotation", attributes=attributes)
+        )
 
     def get_well_row_column(self, well):
         """
@@ -272,7 +276,9 @@ class Show(object):
             first_selected = self._load_well(attributes)
         else:
             # All other objects can be loaded by type and attributes.
-            (first_selected,) = self.conn.getObjects(first_obj, attributes=attributes)
+            (first_selected,) = self.conn.getObjects(
+                first_obj, attributes=attributes
+            )
 
         if first_obj == "well":
             # Wells aren't in the tree, so we need to look up the parent
@@ -310,7 +316,9 @@ class Show(object):
                 first_selected = first_selected.getImage()
 
             # Tree hierarchy open to first selected object.
-            self._initially_open = ["%s-%s" % (first_obj, first_selected.getId())]
+            self._initially_open = [
+                "%s-%s" % (first_obj, first_selected.getId())
+            ]
         # support for multiple objects selected by ID,
         # E.g. show=image-1|image-2
         if "id" in attributes.keys() and len(self._initially_select) > 1:
@@ -577,7 +585,9 @@ def paths_to_object(
         if project_id is not None:
             where_clause.append("pdlink.parent.id = :pid")
         if experimenter_id is not None:
-            where_clause.append("coalesce(powner.id, downer.id, iowner.id) = :eid")
+            where_clause.append(
+                "coalesce(powner.id, downer.id, iowner.id) = :eid"
+            )
         if len(where_clause) > 0:
             q += " and " + " and ".join(where_clause)
 
@@ -635,7 +645,9 @@ def paths_to_object(
                 )
                 if len(paths_to_img) == 0:
                     orph = {"type": "orphaned", "id": e[0].val}
-                    iids = get_image_ids(conn, groupId=e[5].val, ownerId=e[0].val)
+                    iids = get_image_ids(
+                        conn, groupId=e[5].val, ownerId=e[0].val
+                    )
                     if len(iids) > page_size:
                         try:
                             index = iids.index(imageId)
@@ -752,7 +764,9 @@ def paths_to_object(
         if screen_id is not None:
             where_clause.append("slink.parent.id = :sid")
         if experimenter_id is not None:
-            where_clause.append("coalesce(sowner.id, plowner.id, aowner.id) = :eid")
+            where_clause.append(
+                "coalesce(sowner.id, plowner.id, aowner.id) = :eid"
+            )
         if len(where_clause) > 0:
             q += " and " + " and ".join(where_clause)
 

@@ -57,7 +57,9 @@ class TestWeb(object):
         )  # FIXME: should not be hard-coded
         dist_dir = dist_dir.abspath()
         monkeypatch.setattr(
-            WebControl, "_get_python_dir", lambda x: dist_dir / "lib" / "python"
+            WebControl,
+            "_get_python_dir",
+            lambda x: dist_dir / "lib" / "python",
         )
 
     def mock_os_kill(self, monkeypatch, error=False):
@@ -101,13 +103,19 @@ class TestWeb(object):
         else:
             prefix = _get_default_value("omero.web.prefix")
             static_prefix = _get_default_value("omero.web.static_url")
-        monkeypatch.setattr(settings, "STATIC_URL", static_prefix, raising=False)
-        monkeypatch.setattr(settings, "FORCE_SCRIPT_NAME", prefix, raising=False)
+        monkeypatch.setattr(
+            settings, "STATIC_URL", static_prefix, raising=False
+        )
+        monkeypatch.setattr(
+            settings, "FORCE_SCRIPT_NAME", prefix, raising=False
+        )
         return static_prefix
 
     def mock_django_setting(self, setting_name, setting_val, monkeypatch):
         if setting_val:
-            monkeypatch.setattr(settings, setting_name, setting_val, raising=False)
+            monkeypatch.setattr(
+                settings, setting_name, setting_val, raising=False
+            )
         return setting_val
 
     def add_upstream_name(self, prefix, monkeypath):
@@ -452,7 +460,9 @@ class TestWeb(object):
     @pytest.mark.parametrize(
         "static_root", ["/home/omero/OMERO.server/lib/python/omeroweb/static"]
     )
-    def testFullTemplateDefaults(self, server_type, static_root, capsys, monkeypatch):
+    def testFullTemplateDefaults(
+        self, server_type, static_root, capsys, monkeypatch
+    ):
         app_server = server_type[-1]
         del server_type[-1]
         self.mock_django_setting("STATIC_ROOT", static_root, monkeypatch)
@@ -531,7 +541,9 @@ class TestWeb(object):
 
         o, e = capsys.readouterr()
         o = self.normalise_generated(o)
-        d = self.compare_with_reference(server_type[0] + "-withoptions.conf", o)
+        d = self.compare_with_reference(
+            server_type[0] + "-withoptions.conf", o
+        )
         assert not d, "Files are different:\n" + d
 
     def testNginxLocationComment(self):
@@ -552,7 +564,9 @@ class TestWeb(object):
             return out
 
         diffs = list(
-            unified_diff(clean("nginx.conf"), clean("nginx-location.conf"), n=0)
+            unified_diff(
+                clean("nginx.conf"), clean("nginx-location.conf"), n=0
+            )
         )
         assert diffs == [
             "--- \n",

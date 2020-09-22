@@ -20,7 +20,11 @@
 """Settings for the OMERO JSON api app."""
 
 import sys
-from omeroweb.settings import process_custom_settings, report_settings, str_slash
+from omeroweb.settings import (
+    process_custom_settings,
+    report_settings,
+    str_slash,
+)
 
 # load settings
 API_SETTINGS_MAPPING = {

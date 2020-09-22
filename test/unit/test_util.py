@@ -91,7 +91,9 @@ class TestUtil(object):
     )
     def test_reverse_with_params_string(self, top_links):
         top_link = top_links[0]
-        assert reverse_with_params(top_link) == reverse(top_link) == top_links[1]
+        assert (
+            reverse_with_params(top_link) == reverse(top_link) == top_links[1]
+        )
 
     @pytest.mark.parametrize(
         "top_links",
@@ -106,7 +108,8 @@ class TestUtil(object):
         with pytest.raises(TypeError) as excinfo:
             reverse_with_params(**kwargs)
         assert (
-            "reverse_with_params() argument after ** must" " be a mapping, not %s"
+            "reverse_with_params() argument after ** must"
+            " be a mapping, not %s"
         ) % top_links[1] in str(excinfo.value)
 
     @pytest.mark.parametrize(

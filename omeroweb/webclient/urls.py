@@ -42,13 +42,28 @@ urlpatterns = [
         views.load_template,
         name="load_template",
     ),
-    url(r"^userdata/$", views.load_template, {"menu": "userdata"}, name="userdata"),
-    url(r"^history/$", views.load_template, {"menu": "history"}, name="history"),
+    url(
+        r"^userdata/$",
+        views.load_template,
+        {"menu": "userdata"},
+        name="userdata",
+    ),
+    url(
+        r"^history/$", views.load_template, {"menu": "history"}, name="history"
+    ),
     url(r"^login/$", views.WebclientLoginView.as_view(), name="weblogin"),
     url(r"^logout/$", views.logout, name="weblogout"),
-    url(r"^active_group/$", views.change_active_group, name="change_active_group"),
+    url(
+        r"^active_group/$",
+        views.change_active_group,
+        name="change_active_group",
+    ),
     # The content of group/users drop-down menu
-    url(r"^group_user_content/$", views.group_user_content, name="group_user_content"),
+    url(
+        r"^group_user_content/$",
+        views.group_user_content,
+        name="group_user_content",
+    ),
     # update, display activities, E.g. delete queues, scripts etc.
     url(r"^activities/", views.activities, name="activities"),
     url(
@@ -73,7 +88,9 @@ urlpatterns = [
     # chgrp. Load potential target groups, then load target P/D within chosen
     # group
     url(
-        r"^load_chgrp_groups/$", views.load_chgrp_groups, name="load_chgrp_groups"
+        r"^load_chgrp_groups/$",
+        views.load_chgrp_groups,
+        name="load_chgrp_groups",
     ),  # Query E.g. ?Image=1,2&Dataset=3
     url(
         r"^load_chgrp_target/(?P<group_id>[0-9]+)/"
@@ -259,7 +276,9 @@ urlpatterns = [
         name="marshal_tagging_form_data",
     ),
     url(r"^annotate_rating/$", views.annotate_rating, name="annotate_rating"),
-    url(r"^annotate_comment/$", views.annotate_comment, name="annotate_comment"),
+    url(
+        r"^annotate_comment/$", views.annotate_comment, name="annotate_comment"
+    ),
     url(r"^annotate_file/$", views.annotate_file, name="annotate_file"),
     url(r"^annotate_map/$", views.annotate_map, name="annotate_map"),
     url(
@@ -268,7 +287,8 @@ urlpatterns = [
         name="download_annotation",
     ),
     url(
-        r"^load_original_metadata/(?P<imageId>[0-9]+)/" r"(?:(?P<share_id>[0-9]+)/)?$",
+        r"^load_original_metadata/(?P<imageId>[0-9]+)/"
+        r"(?:(?P<share_id>[0-9]+)/)?$",
         views.load_original_metadata,
         name="load_original_metadata",
     ),
@@ -291,7 +311,9 @@ urlpatterns = [
         r"^script_ui/(?P<scriptId>[0-9]+)/$", views.script_ui, name="script_ui"
     ),  # shows a form for running a script
     url(
-        r"^script_run/(?P<scriptId>[0-9]+)/$", views.script_run, name="script_run"
+        r"^script_run/(?P<scriptId>[0-9]+)/$",
+        views.script_run,
+        name="script_run",
     ),  # runs the script - parameters in POST
     url(r"^script_upload/$", views.script_upload, name="script_upload"),
     url(
@@ -306,7 +328,8 @@ urlpatterns = [
         name="download_original_file",
     ),  # for stderr, stdout etc
     url(
-        r"^figure_script/(?P<scriptName>" r"((?i)SplitView|Thumbnail|MakeMovie))/$",
+        r"^figure_script/(?P<scriptName>"
+        r"((?i)SplitView|Thumbnail|MakeMovie))/$",
         views.figure_script,
         name="figure_script",
     ),  # shows a form for running a script
@@ -363,11 +386,19 @@ urlpatterns = [
     # url(r'^api/tags/(?P<pk>[0-9]+)/$', views.api_tag_detail),
     # Retrieve paths to an object
     url(
-        r"^api/paths_to_object/$", views.api_paths_to_object, name="api_paths_to_object"
+        r"^api/paths_to_object/$",
+        views.api_paths_to_object,
+        name="api_paths_to_object",
     ),
     # Get parents of 1 or more objects. ?image=1,2&dataset=3
-    url(r"^api/parent_links/$", views.api_parent_links, name="api_parent_links"),
-    url(r"^api/tags/$", views.api_tags_and_tagged_list, name="api_tags_and_tagged"),
+    url(
+        r"^api/parent_links/$", views.api_parent_links, name="api_parent_links"
+    ),
+    url(
+        r"^api/tags/$",
+        views.api_tags_and_tagged_list,
+        name="api_tags_and_tagged",
+    ),
     url(r"^api/annotations/$", views.api_annotations, name="api_annotations"),
     url(r"^api/shares/$", views.api_share_list, name="api_shares"),
 ]

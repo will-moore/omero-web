@@ -109,7 +109,9 @@ LOGGING = {
         "default": {
             "level": "DEBUG",
             "class": LOGGING_CLASS,
-            "filename": os.path.join(LOGDIR, "OMEROweb.log").replace("\\", "/"),
+            "filename": os.path.join(LOGDIR, "OMEROweb.log").replace(
+                "\\", "/"
+            ),
             "maxBytes": LOGSIZE,
             "backupCount": 10,
             "formatter": "standard",
@@ -117,7 +119,9 @@ LOGGING = {
         "request_handler": {
             "level": "DEBUG",
             "class": LOGGING_CLASS,
-            "filename": os.path.join(LOGDIR, "OMEROweb.log").replace("\\", "/"),
+            "filename": os.path.join(LOGDIR, "OMEROweb.log").replace(
+                "\\", "/"
+            ),
             "maxBytes": LOGSIZE,
             "backupCount": 10,
             "filters": ["require_debug_false"],
@@ -141,7 +145,11 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
-        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "": {"handlers": ["default"], "level": "DEBUG", "propagate": True},
     },
 }
@@ -209,7 +217,8 @@ def parse_paths(s):
 def check_server_type(s):
     if s not in ALL_SERVER_TYPES:
         raise ValueError(
-            "Unknown server type: %s. Valid values are: %s" % (s, ALL_SERVER_TYPES)
+            "Unknown server type: %s. Valid values are: %s"
+            % (s, ALL_SERVER_TYPES)
         )
     return s
 
@@ -255,7 +264,12 @@ CUSTOM_HOST = CUSTOM_SETTINGS.get("Ice.Default.Host", "localhost")
 CUSTOM_HOST = CUSTOM_SETTINGS.get("omero.master.host", CUSTOM_HOST)
 # DO NOT EDIT!
 INTERNAL_SETTINGS_MAPPING = {
-    "omero.qa.feedback": ["FEEDBACK_URL", "http://qa.openmicroscopy.org.uk", str, None],
+    "omero.qa.feedback": [
+        "FEEDBACK_URL",
+        "http://qa.openmicroscopy.org.uk",
+        str,
+        None,
+    ],
     "omero.web.upgrades.url": ["UPGRADES_URL", None, leave_none_unset, None],
     "omero.web.check_version": ["CHECK_VERSION", "true", parse_boolean, None],
     # Allowed hosts:
@@ -302,7 +316,12 @@ INTERNAL_SETTINGS_MAPPING = {
         identity,
         "Username to use for the SMTP server.",
     ],
-    "omero.mail.port": ["EMAIL_PORT", 25, identity, "Port to use for the SMTP server."],
+    "omero.mail.port": [
+        "EMAIL_PORT",
+        25,
+        identity,
+        "Port to use for the SMTP server.",
+    ],
     "omero.web.admins.email_subject_prefix": [
         "EMAIL_SUBJECT_PREFIX",
         "[OMERO.web - admin notification]",
@@ -336,7 +355,10 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "SECRET_KEY",
         None,
         leave_none_unset,
-        ("A boolean that sets SECRET_KEY for a particular Django " "installation."),
+        (
+            "A boolean that sets SECRET_KEY for a particular Django "
+            "installation."
+        ),
     ],
     "omero.web.admins": [
         "ADMINS",
@@ -381,7 +403,10 @@ CUSTOM_SETTINGS_MAPPINGS = {
         "APPLICATION_SERVER_MAX_REQUESTS",
         0,
         int,
-        ("The maximum number of requests a worker will process before " "restarting."),
+        (
+            "The maximum number of requests a worker will process before "
+            "restarting."
+        ),
     ],
     "omero.web.middleware": [
         "MIDDLEWARE_CLASSES_LIST",
@@ -475,7 +500,10 @@ CUSTOM_SETTINGS_MAPPINGS = {
     ],
     "omero.web.caches": [
         "CACHES",
-        ('{"default": {"BACKEND":' ' "django.core.cache.backends.dummy.DummyCache"}}'),
+        (
+            '{"default": {"BACKEND":'
+            ' "django.core.cache.backends.dummy.DummyCache"}}'
+        ),
         json.loads,
         (
             "OMERO.web offers alternative session backends to automatically"
@@ -536,7 +564,12 @@ CUSTOM_SETTINGS_MAPPINGS = {
             "OMERO.web."
         ),
     ],
-    "omero.web.logdir": ["LOGDIR", LOGDIR, str, "A path to the custom log directory."],
+    "omero.web.logdir": [
+        "LOGDIR",
+        LOGDIR,
+        str,
+        "A path to the custom log directory.",
+    ],
     "omero.web.secure_proxy_ssl_header": [
         "SECURE_PROXY_SSL_HEADER",
         "[]",
@@ -632,7 +665,12 @@ CUSTOM_SETTINGS_MAPPINGS = {
         str,
         None,
     ],
-    "omero.web.public.cache.timeout": ["PUBLIC_CACHE_TIMEOUT", 60 * 60 * 24, int, None],
+    "omero.web.public.cache.timeout": [
+        "PUBLIC_CACHE_TIMEOUT",
+        60 * 60 * 24,
+        int,
+        None,
+    ],
     # Social media integration
     "omero.web.sharing.twitter": [
         "SHARING_TWITTER",
@@ -673,7 +711,12 @@ CUSTOM_SETTINGS_MAPPINGS = {
         int,
         "Size, in bytes, of the “chunk”",
     ],
-    "omero.web.webgateway_cache": ["WEBGATEWAY_CACHE", None, leave_none_unset, None],
+    "omero.web.webgateway_cache": [
+        "WEBGATEWAY_CACHE",
+        None,
+        leave_none_unset,
+        None,
+    ],
     "omero.web.maximum_multifile_download_size": [
         "MAXIMUM_MULTIFILE_DOWNLOAD_ZIP_SIZE",
         1024 ** 3,
@@ -1098,7 +1141,10 @@ DEPRECATED_SETTINGS_MAPPINGS = {
         "EMAIL_USE_TLS",
         "false",
         parse_boolean,
-        ("Use omero.mail.smtp.* instead to set up" " javax.mail.Session properties."),
+        (
+            "Use omero.mail.smtp.* instead to set up"
+            " javax.mail.Session properties."
+        ),
     ],
     "omero.web.plate_download.enabled": [
         "PLATE_DOWNLOAD_ENABLED",
@@ -1144,7 +1190,8 @@ def check_threading(t):
             import concurrent.futures  # NOQA
         except ImportError:
             raise ImportError(
-                "You are using sync workers with " "multiple threads. Install futures"
+                "You are using sync workers with "
+                "multiple threads. Install futures"
             )
     return int(t)
 
@@ -1207,7 +1254,9 @@ def process_custom_settings(
     logging.info("Processing custom settings for module %s" % module.__name__)
 
     if deprecated:
-        deprecated_map = map_deprecated_settings(getattr(module, deprecated, {}))
+        deprecated_map = map_deprecated_settings(
+            getattr(module, deprecated, {})
+        )
     else:
         deprecated_map = {}
 
@@ -1232,7 +1281,9 @@ def process_custom_settings(
             if global_name in deprecated_map:
                 dep_value, dep_key = deprecated_map[global_name]
                 if using_default:
-                    logging.warning("Setting %s is deprecated, use %s", dep_key, key)
+                    logging.warning(
+                        "Setting %s is deprecated, use %s", dep_key, key
+                    )
                     global_value = dep_value
                 else:
                     logging.error(
@@ -1258,7 +1309,9 @@ def process_custom_settings(
 
 process_custom_settings(sys.modules[__name__], "INTERNAL_SETTINGS_MAPPING")
 process_custom_settings(
-    sys.modules[__name__], "CUSTOM_SETTINGS_MAPPINGS", "DEPRECATED_SETTINGS_MAPPINGS"
+    sys.modules[__name__],
+    "CUSTOM_SETTINGS_MAPPINGS",
+    "DEPRECATED_SETTINGS_MAPPINGS",
 )
 process_custom_settings(sys.modules[__name__], "DEVELOPMENT_SETTINGS_MAPPINGS")
 
@@ -1274,7 +1327,13 @@ def report_settings(module):
     custom_settings_mappings = getattr(module, "CUSTOM_SETTINGS_MAPPINGS", {})
     for key in sorted(custom_settings_mappings):
         values = custom_settings_mappings[key]
-        global_name, default_value, mapping, description, using_default = values
+        (
+            global_name,
+            default_value,
+            mapping,
+            description,
+            using_default,
+        ) = values
         source = using_default and "default" or key
         global_value = getattr(module, global_name, None)
         if global_name.isupper():
@@ -1288,7 +1347,13 @@ def report_settings(module):
     deprecated_settings = getattr(module, "DEPRECATED_SETTINGS_MAPPINGS", {})
     for key in sorted(deprecated_settings):
         values = deprecated_settings[key]
-        global_name, default_value, mapping, description, using_default = values
+        (
+            global_name,
+            default_value,
+            mapping,
+            description,
+            using_default,
+        ) = values
         global_value = getattr(module, global_name, None)
         if global_name.isupper() and not using_default:
             logger.debug(
@@ -1321,14 +1386,18 @@ LANGUAGE_CODE = "en-gb"
 try:
     SECRET_KEY
 except NameError:
-    secret_path = os.path.join(OMERODIR, "var", "django_secret_key").replace("\\", "/")
+    secret_path = os.path.join(OMERODIR, "var", "django_secret_key").replace(
+        "\\", "/"
+    )
     if not os.path.isfile(secret_path):
         try:
             secret_key = "".join(
                 [
                     random.SystemRandom().choice(
                         "{0}{1}{2}".format(
-                            string.ascii_letters, string.digits, string.punctuation
+                            string.ascii_letters,
+                            string.digits,
+                            string.punctuation,
                         )
                     )
                     for i in range(50)
@@ -1437,7 +1506,9 @@ for app in ADDITIONAL_APPS:  # from CUSTOM_SETTINGS_MAPPINGS  # noqa
     except ImportError:
         INSTALLED_APPS += (app,)
     try:
-        logger.debug("Attempting to import additional app settings for app: %s" % app)
+        logger.debug(
+            "Attempting to import additional app settings for app: %s" % app
+        )
         module = __import__("%s.settings" % app)
         process_custom_settings(module.settings)
         report_settings(module.settings)

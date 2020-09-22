@@ -96,7 +96,9 @@ class ShareForm(NonASCIIForm):
             "members",
         ]  # , 'guests']
 
-    message = forms.CharField(widget=forms.Textarea(attrs={"rows": 5, "cols": 50}))
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 5, "cols": 50})
+    )
     expiration = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={"size": 10}),
@@ -121,9 +123,13 @@ class ShareForm(NonASCIIForm):
                     ("%s-%s-%s" % (d[0], d[1], d[2])), "%Y-%m-%d"
                 )
             except Exception:
-                raise forms.ValidationError("Date is in the wrong format. YY-MM-DD")
+                raise forms.ValidationError(
+                    "Date is in the wrong format. YY-MM-DD"
+                )
             if time.mktime(date.timetuple()) <= time.time():
-                raise forms.ValidationError("Expiry date must be in the future.")
+                raise forms.ValidationError(
+                    "Expiry date must be in the future."
+                )
         return self.cleaned_data["expiration"]
 
 
@@ -146,7 +152,9 @@ class BasketShareForm(ShareForm):
 
 class ContainerForm(NonASCIIForm):
 
-    name = forms.CharField(max_length=250, widget=forms.TextInput(attrs={"size": 45}))
+    name = forms.CharField(
+        max_length=250, widget=forms.TextInput(attrs={"size": 45})
+    )
     description = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 2, "cols": 49}), required=False
     )
@@ -155,7 +163,9 @@ class ContainerForm(NonASCIIForm):
 
 class ContainerNameForm(NonASCIIForm):
 
-    name = forms.CharField(max_length=250, widget=forms.TextInput(attrs={"size": 45}))
+    name = forms.CharField(
+        max_length=250, widget=forms.TextInput(attrs={"size": 45})
+    )
 
 
 class ContainerDescriptionForm(NonASCIIForm):
@@ -176,7 +186,11 @@ class BaseAnnotationForm(NonASCIIForm):
     def __init__(self, *args, **kwargs):
         super(BaseAnnotationForm, self).__init__(*args, **kwargs)
 
-        images = "images" in kwargs["initial"] and kwargs["initial"]["images"] or list()
+        images = (
+            "images" in kwargs["initial"]
+            and kwargs["initial"]["images"]
+            or list()
+        )
         if len(images) > 0:
             try:
                 self.fields["image"] = ObjectModelMultipleChoiceField(
@@ -193,7 +207,9 @@ class BaseAnnotationForm(NonASCIIForm):
                 )
 
         datasets = (
-            "datasets" in kwargs["initial"] and kwargs["initial"]["datasets"] or list()
+            "datasets" in kwargs["initial"]
+            and kwargs["initial"]["datasets"]
+            or list()
         )
         if len(datasets) > 0:
             try:
@@ -211,7 +227,9 @@ class BaseAnnotationForm(NonASCIIForm):
                 )
 
         projects = (
-            "projects" in kwargs["initial"] and kwargs["initial"]["projects"] or list()
+            "projects" in kwargs["initial"]
+            and kwargs["initial"]["projects"]
+            or list()
         )
         if len(projects) > 0:
             try:
@@ -229,7 +247,9 @@ class BaseAnnotationForm(NonASCIIForm):
                 )
 
         screens = (
-            "screens" in kwargs["initial"] and kwargs["initial"]["screens"] or list()
+            "screens" in kwargs["initial"]
+            and kwargs["initial"]["screens"]
+            or list()
         )
         if len(screens) > 0:
             try:
@@ -246,7 +266,11 @@ class BaseAnnotationForm(NonASCIIForm):
                     required=False,
                 )
 
-        plates = "plates" in kwargs["initial"] and kwargs["initial"]["plates"] or list()
+        plates = (
+            "plates" in kwargs["initial"]
+            and kwargs["initial"]["plates"]
+            or list()
+        )
         if len(plates) > 0:
             try:
                 self.fields["plate"] = ObjectModelMultipleChoiceField(
@@ -282,7 +306,11 @@ class BaseAnnotationForm(NonASCIIForm):
                     required=False,
                 )
 
-        wells = "wells" in kwargs["initial"] and kwargs["initial"]["wells"] or list()
+        wells = (
+            "wells" in kwargs["initial"]
+            and kwargs["initial"]["wells"]
+            or list()
+        )
         if len(wells) > 0:
             try:
                 self.fields["well"] = ObjectModelMultipleChoiceField(
@@ -298,7 +326,11 @@ class BaseAnnotationForm(NonASCIIForm):
                     required=False,
                 )
 
-        shares = "shares" in kwargs["initial"] and kwargs["initial"]["shares"] or list()
+        shares = (
+            "shares" in kwargs["initial"]
+            and kwargs["initial"]["shares"]
+            or list()
+        )
         if len(shares) > 0:
             try:
                 self.fields["share"] = ObjectModelMultipleChoiceField(
@@ -341,7 +373,9 @@ class NewTagsAnnotationForm(forms.Form):
 
     tag = forms.CharField(required=True, widget=forms.HiddenInput)
     description = forms.CharField(required=False, widget=forms.HiddenInput)
-    tagset = forms.IntegerField(min_value=1, required=False, widget=forms.HiddenInput)
+    tagset = forms.IntegerField(
+        min_value=1, required=False, widget=forms.HiddenInput
+    )
 
 
 NewTagsAnnotationFormSet = formset_factory(NewTagsAnnotationForm, extra=0)
@@ -352,7 +386,9 @@ class FilesAnnotationForm(BaseAnnotationForm):
         super(FilesAnnotationForm, self).__init__(*args, **kwargs)
         self.fields["files"] = AnnotationModelMultipleChoiceField(
             queryset=kwargs["initial"]["files"],
-            widget=forms.SelectMultiple(attrs={"size": 8, "class": "existing"}),
+            widget=forms.SelectMultiple(
+                attrs={"size": 8, "class": "existing"}
+            ),
             required=False,
         )
 
@@ -360,7 +396,9 @@ class FilesAnnotationForm(BaseAnnotationForm):
 
 
 class CommentAnnotationForm(BaseAnnotationForm):
-    comment = forms.CharField(widget=forms.Textarea(attrs={"rows": 2, "cols": 39}))
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 2, "cols": 39})
+    )
 
 
 class ActiveGroupForm(forms.Form):
@@ -407,12 +445,17 @@ class WellIndexForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(WellIndexForm, self).__init__(*args, **kwargs)
         rmin, rmax = kwargs["initial"]["range"]
-        choices = [(str(i), "Field#%i" % (i - rmin + 1)) for i in range(rmin, rmax + 1)]
+        choices = [
+            (str(i), "Field#%i" % (i - rmin + 1))
+            for i in range(rmin, rmax + 1)
+        ]
         self.fields["index"] = forms.ChoiceField(
             choices=tuple(choices),
             widget=forms.Select(
                 attrs={
-                    "onchange": ("changeField(this.options[this.selectedIndex].value);")
+                    "onchange": (
+                        "changeField(this.options[this.selectedIndex].value);"
+                    )
                 }
             ),
         )
@@ -452,7 +495,10 @@ class MetadataChannelForm(forms.Form):
                 self.fields["name"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
-                        attrs={"size": 25, "onchange": save_metadata(logicalCh.id)}
+                        attrs={
+                            "size": 25,
+                            "onchange": save_metadata(logicalCh.id),
+                        }
                     ),
                     initial=logicalCh.name,
                     required=False,
@@ -490,7 +536,10 @@ class MetadataChannelForm(forms.Form):
                         }
                     ),
                     initial=kwargs["initial"]["exWave"].getValue(),
-                    label=("Excitation (%s)" % kwargs["initial"]["exWave"].getSymbol()),
+                    label=(
+                        "Excitation (%s)"
+                        % kwargs["initial"]["exWave"].getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -528,7 +577,10 @@ class MetadataChannelForm(forms.Form):
                         }
                     ),
                     initial=kwargs["initial"]["emWave"].getValue(),
-                    label=("Emission (%s)" % kwargs["initial"]["emWave"].getSymbol()),
+                    label=(
+                        "Emission (%s)"
+                        % kwargs["initial"]["emWave"].getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -604,7 +656,10 @@ class MetadataChannelForm(forms.Form):
                         }
                     ),
                     initial=logicalCh.pinHoleSize.getValue(),
-                    label=("Pin hole size (%s)" % logicalCh.pinHoleSize.getSymbol()),
+                    label=(
+                        "Pin hole size (%s)"
+                        % logicalCh.pinHoleSize.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -850,7 +905,8 @@ class MetadataDichroicForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["dichroic"].id, "manufacturer"
+                                kwargs["initial"]["dichroic"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -864,7 +920,8 @@ class MetadataDichroicForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["dichroic"].id, "manufacturer"
+                                kwargs["initial"]["dichroic"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -972,7 +1029,8 @@ class MetadataDichroicForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["dichroic"].lotNumber, "lotNumber"
+                                kwargs["initial"]["dichroic"].lotNumber,
+                                "lotNumber",
                             ),
                         }
                     ),
@@ -987,7 +1045,8 @@ class MetadataDichroicForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["dichroic"].lotNumber, "lotNumber"
+                                kwargs["initial"]["dichroic"].lotNumber,
+                                "lotNumber",
                             ),
                         }
                     ),
@@ -1005,7 +1064,12 @@ class MetadataDichroicForm(forms.Form):
             )
             set_widget_attrs(self.fields["lotNumber"])
 
-        self.fields.keyOrder = ["model", "manufacturer", "serialNumber", "lotNumber"]
+        self.fields.keyOrder = [
+            "model",
+            "manufacturer",
+            "serialNumber",
+            "lotNumber",
+        ]
 
 
 class MetadataMicroscopeForm(forms.Form):
@@ -1060,7 +1124,8 @@ class MetadataMicroscopeForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["microscope"].id, "manufacturer"
+                                kwargs["initial"]["microscope"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -1074,7 +1139,8 @@ class MetadataMicroscopeForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["microscope"].id, "manufacturer"
+                                kwargs["initial"]["microscope"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -1183,11 +1249,15 @@ class MetadataMicroscopeForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["microscope"].id, "type", options=True
+                                kwargs["initial"]["microscope"].id,
+                                "type",
+                                options=True,
                             )
                         }
                     ),
-                    initial=kwargs["initial"]["microscope"].getMicroscopeType().value,
+                    initial=kwargs["initial"]["microscope"]
+                    .getMicroscopeType()
+                    .value,
                     required=False,
                 )
             else:
@@ -1197,7 +1267,9 @@ class MetadataMicroscopeForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["microscope"].id, "type", options=True
+                                kwargs["initial"]["microscope"].id,
+                                "type",
+                                options=True,
                             )
                         }
                     ),
@@ -1274,7 +1346,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "manufacturer"
+                                kwargs["initial"]["objective"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -1288,7 +1361,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "manufacturer"
+                                kwargs["initial"]["objective"].id,
+                                "manufacturer",
                             ),
                         }
                     ),
@@ -1313,7 +1387,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "serialNumber"
+                                kwargs["initial"]["objective"].id,
+                                "serialNumber",
                             ),
                         }
                     ),
@@ -1328,7 +1403,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "serialNumber"
+                                kwargs["initial"]["objective"].id,
+                                "serialNumber",
                             ),
                         }
                     ),
@@ -1355,7 +1431,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].lotNumber, "lotNumber"
+                                kwargs["initial"]["objective"].lotNumber,
+                                "lotNumber",
                             ),
                         }
                     ),
@@ -1405,7 +1482,9 @@ class MetadataObjectiveForm(forms.Form):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["objective"].nominalMagnification,
+                    initial=kwargs["initial"][
+                        "objective"
+                    ].nominalMagnification,
                     label="Nominal magnification",
                     required=False,
                 )
@@ -1437,7 +1516,10 @@ class MetadataObjectiveForm(forms.Form):
 
         # Calibrated Magnification
         try:
-            if kwargs["initial"]["objective"].calibratedMagnification is not None:
+            if (
+                kwargs["initial"]["objective"].calibratedMagnification
+                is not None
+            ):
                 self.fields["calibratedMagnification"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
@@ -1449,7 +1531,9 @@ class MetadataObjectiveForm(forms.Form):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["objective"].calibratedMagnification,
+                    initial=kwargs["initial"][
+                        "objective"
+                    ].calibratedMagnification,
                     label="Calibrated magnification",
                     required=False,
                 )
@@ -1535,7 +1619,9 @@ class MetadataObjectiveForm(forms.Form):
                             )
                         }
                     ),
-                    initial=kwargs["initial"]["objective"].getImmersion().value,
+                    initial=kwargs["initial"]["objective"]
+                    .getImmersion()
+                    .value,
                     required=False,
                 )
             else:
@@ -1578,7 +1664,9 @@ class MetadataObjectiveForm(forms.Form):
                             )
                         }
                     ),
-                    initial=kwargs["initial"]["objective"].getCorrection().value,
+                    initial=kwargs["initial"]["objective"]
+                    .getCorrection()
+                    .value,
                     required=False,
                 )
             else:
@@ -1616,14 +1704,19 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "workingDistance"
+                                kwargs["initial"]["objective"].id,
+                                "workingDistance",
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["objective"].workingDistance.getValue(),
+                    initial=kwargs["initial"][
+                        "objective"
+                    ].workingDistance.getValue(),
                     label=(
                         "Working distance (%s)"
-                        % kwargs["initial"]["objective"].workingDistance.getSymbol()
+                        % kwargs["initial"][
+                            "objective"
+                        ].workingDistance.getSymbol()
                     ),
                     required=False,
                 )
@@ -1634,7 +1727,8 @@ class MetadataObjectiveForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "workingDistance"
+                                kwargs["initial"]["objective"].id,
+                                "workingDistance",
                             ),
                         }
                     ),
@@ -1660,7 +1754,9 @@ class MetadataObjectiveForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "iris", options=True
+                                kwargs["initial"]["objective"].id,
+                                "iris",
+                                options=True,
                             )
                         }
                     ),
@@ -1673,7 +1769,9 @@ class MetadataObjectiveForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["objective"].id, "iris", options=True
+                                kwargs["initial"]["objective"].id,
+                                "iris",
+                                options=True,
                             )
                         }
                     ),
@@ -1719,7 +1817,10 @@ class MetadataObjectiveSettingsForm(MetadataObjectiveForm):
 
         # Correction Collar
         try:
-            if kwargs["initial"]["objectiveSettings"].correctionCollar is not None:
+            if (
+                kwargs["initial"]["objectiveSettings"].correctionCollar
+                is not None
+            ):
                 self.fields["correctionCollar"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
@@ -1731,7 +1832,9 @@ class MetadataObjectiveSettingsForm(MetadataObjectiveForm):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["objectiveSettings"].correctionCollar,
+                    initial=kwargs["initial"][
+                        "objectiveSettings"
+                    ].correctionCollar,
                     label="Correction collar",
                     required=False,
                 )
@@ -1776,7 +1879,9 @@ class MetadataObjectiveSettingsForm(MetadataObjectiveForm):
                             )
                         }
                     ),
-                    initial=kwargs["initial"]["objectiveSettings"].getMedium().value,
+                    initial=kwargs["initial"]["objectiveSettings"]
+                    .getMedium()
+                    .value,
                     required=False,
                 )
             else:
@@ -1806,7 +1911,10 @@ class MetadataObjectiveSettingsForm(MetadataObjectiveForm):
 
         # Refractive Index
         try:
-            if kwargs["initial"]["objectiveSettings"].refractiveIndex is not None:
+            if (
+                kwargs["initial"]["objectiveSettings"].refractiveIndex
+                is not None
+            ):
                 self.fields["refractiveIndex"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
@@ -1818,7 +1926,9 @@ class MetadataObjectiveSettingsForm(MetadataObjectiveForm):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["objectiveSettings"].refractiveIndex,
+                    initial=kwargs["initial"][
+                        "objectiveSettings"
+                    ].refractiveIndex,
                     label="Refractive index",
                     required=False,
                 )
@@ -2085,7 +2195,9 @@ class MetadataFilterForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["filter"].id, "type", options=True
+                                kwargs["initial"]["filter"].id,
+                                "type",
+                                options=True,
                             )
                         }
                     ),
@@ -2099,7 +2211,9 @@ class MetadataFilterForm(forms.Form):
                     widget=forms.Select(
                         attrs={
                             "onchange": save_metadata(
-                                kwargs["initial"]["filter"].id, "type", options=True
+                                kwargs["initial"]["filter"].id,
+                                "type",
+                                options=True,
                             )
                         }
                     ),
@@ -2211,12 +2325,15 @@ class MetadataFilterForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["filter"].id, "cutInTolerance"
+                                kwargs["initial"]["filter"].id,
+                                "cutInTolerance",
                             ),
                         }
                     ),
                     initial=tr.cutInTolerance.getValue(),
-                    label=("Cut in tolerance (%s)" % tr.cutInTolerance.getSymbol()),
+                    label=(
+                        "Cut in tolerance (%s)" % tr.cutInTolerance.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -2226,7 +2343,8 @@ class MetadataFilterForm(forms.Form):
                         attrs={
                             "size": 25,
                             "onchange": save_metadata(
-                                kwargs["initial"]["filter"].id, "cutInTolerance"
+                                kwargs["initial"]["filter"].id,
+                                "cutInTolerance",
                             ),
                         }
                     ),
@@ -2258,7 +2376,10 @@ class MetadataFilterForm(forms.Form):
                         }
                     ),
                     initial=tr.cutOutTolerance.getValue(),
-                    label=("Cut out tolerance (%s)" % tr.cutOutTolerance.getSymbol()),
+                    label=(
+                        "Cut out tolerance (%s)"
+                        % tr.cutOutTolerance.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -2360,7 +2481,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "manufacturer"),
+                            "onchange": save_metadata(
+                                detector.id, "manufacturer"
+                            ),
                         }
                     ),
                     initial=detector.manufacturer,
@@ -2372,7 +2495,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "manufacturer"),
+                            "onchange": save_metadata(
+                                detector.id, "manufacturer"
+                            ),
                         }
                     ),
                     required=False,
@@ -2430,7 +2555,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "serialNumber"),
+                            "onchange": save_metadata(
+                                detector.id, "serialNumber"
+                            ),
                         }
                     ),
                     initial=detector.serialNumber,
@@ -2442,7 +2569,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "serialNumber"),
+                            "onchange": save_metadata(
+                                detector.id, "serialNumber"
+                            ),
                         }
                     ),
                     required=False,
@@ -2466,7 +2595,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "lotNumber"),
+                            "onchange": save_metadata(
+                                detector.id, "lotNumber"
+                            ),
                         }
                     ),
                     initial=detector.lotNumber,
@@ -2478,7 +2609,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "lotNumber"),
+                            "onchange": save_metadata(
+                                detector.id, "lotNumber"
+                            ),
                         }
                     ),
                     required=False,
@@ -2501,7 +2634,9 @@ class MetadataDetectorForm(forms.Form):
                     empty_label="Not set",
                     widget=forms.Select(
                         attrs={
-                            "onchange": save_metadata(detector.id, "type", options=True)
+                            "onchange": save_metadata(
+                                detector.id, "type", options=True
+                            )
                         }
                     ),
                     initial=detector.getDetectorType().value,
@@ -2513,7 +2648,9 @@ class MetadataDetectorForm(forms.Form):
                     empty_label="Not set",
                     widget=forms.Select(
                         attrs={
-                            "onchange": save_metadata(detector.id, "type", options=True)
+                            "onchange": save_metadata(
+                                detector.id, "type", options=True
+                            )
                         }
                     ),
                     required=False,
@@ -2534,7 +2671,10 @@ class MetadataDetectorForm(forms.Form):
                 self.fields["gain"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
-                        attrs={"size": 25, "onchange": save_metadata(detSet.id, "gain")}
+                        attrs={
+                            "size": 25,
+                            "onchange": save_metadata(detSet.id, "gain"),
+                        }
                     ),
                     initial=detSet.gain,
                     required=False,
@@ -2555,7 +2695,10 @@ class MetadataDetectorForm(forms.Form):
                 self.fields["gain"] = forms.CharField(
                     max_length=100,
                     widget=forms.TextInput(
-                        attrs={"size": 25, "onchange": save_metadata(detSet.id, "gain")}
+                        attrs={
+                            "size": 25,
+                            "onchange": save_metadata(detSet.id, "gain"),
+                        }
                     ),
                     required=False,
                 )
@@ -2626,7 +2769,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detSet.id, "offsetValue"),
+                            "onchange": save_metadata(
+                                detSet.id, "offsetValue"
+                            ),
                         }
                     ),
                     initial=detSet.offsetValue,
@@ -2639,7 +2784,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "offsetValue"),
+                            "onchange": save_metadata(
+                                detector.id, "offsetValue"
+                            ),
                         }
                     ),
                     initial=detector.offsetValue,
@@ -2652,7 +2799,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "offsetValue"),
+                            "onchange": save_metadata(
+                                detector.id, "offsetValue"
+                            ),
                         }
                     ),
                     label="Offset",
@@ -2712,7 +2861,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "amplificationGain"),
+                            "onchange": save_metadata(
+                                detector.id, "amplificationGain"
+                            ),
                         }
                     ),
                     initial=detector.amplificationGain,
@@ -2725,7 +2876,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detector.id, "amplificationGain"),
+                            "onchange": save_metadata(
+                                detector.id, "amplificationGain"
+                            ),
                         }
                     ),
                     label="Amplification gain",
@@ -2750,11 +2903,15 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detSet.id, "readOutRate"),
+                            "onchange": save_metadata(
+                                detSet.id, "readOutRate"
+                            ),
                         }
                     ),
                     initial=detSet.readOutRate.getValue(),
-                    label=("Read out rate (%s)" % detSet.readOutRate.getSymbol()),
+                    label=(
+                        "Read out rate (%s)" % detSet.readOutRate.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -2763,7 +2920,9 @@ class MetadataDetectorForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(detSet.id, "readOutRate"),
+                            "onchange": save_metadata(
+                                detSet.id, "readOutRate"
+                            ),
                         }
                     ),
                     label="Read out rate",
@@ -2788,7 +2947,9 @@ class MetadataDetectorForm(forms.Form):
                     empty_label="Not set",
                     widget=forms.Select(
                         attrs={
-                            "onchange": save_metadata(detSet.id, "type", options=True)
+                            "onchange": save_metadata(
+                                detSet.id, "type", options=True
+                            )
                         }
                     ),
                     initial=detSet.getBinning().value,
@@ -2800,7 +2961,9 @@ class MetadataDetectorForm(forms.Form):
                     empty_label="Not set",
                     widget=forms.Select(
                         attrs={
-                            "onchange": save_metadata(detSet.id, "type", options=True)
+                            "onchange": save_metadata(
+                                detSet.id, "type", options=True
+                            )
                         }
                     ),
                     required=False,
@@ -2927,7 +3090,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "serialNumber"),
+                            "onchange": save_metadata(
+                                lightSource.id, "serialNumber"
+                            ),
                         }
                     ),
                     initial=lightSource.serialNumber,
@@ -2940,7 +3105,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "serialNumber"),
+                            "onchange": save_metadata(
+                                lightSource.id, "serialNumber"
+                            ),
                         }
                     ),
                     label="Serial number",
@@ -2965,7 +3132,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "lotNumber"),
+                            "onchange": save_metadata(
+                                lightSource.id, "lotNumber"
+                            ),
                         }
                     ),
                     initial=lightSource.lotNumber,
@@ -2978,7 +3147,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "lotNumber"),
+                            "onchange": save_metadata(
+                                lightSource.id, "lotNumber"
+                            ),
                         }
                     ),
                     label="Lot number",
@@ -3149,12 +3320,15 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "wavelength"),
+                            "onchange": save_metadata(
+                                lightSource.id, "wavelength"
+                            ),
                         }
                     ),
                     initial=lightSourceSettings.wavelength.getValue(),
                     label=(
-                        "Wavelength (%s)" % lightSourceSettings.wavelength.getSymbol()
+                        "Wavelength (%s)"
+                        % lightSourceSettings.wavelength.getSymbol()
                     ),
                     required=False,
                 )
@@ -3164,11 +3338,15 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "wavelength"),
+                            "onchange": save_metadata(
+                                lightSource.id, "wavelength"
+                            ),
                         }
                     ),
                     initial=lightSource.wavelength.getValue(),
-                    label=("Wavelength (%s)" % lightSource.wavelength.getSymbol()),
+                    label=(
+                        "Wavelength (%s)" % lightSource.wavelength.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -3177,7 +3355,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "wavelength"),
+                            "onchange": save_metadata(
+                                lightSource.id, "wavelength"
+                            ),
                         }
                     ),
                     required=False,
@@ -3318,12 +3498,15 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "repetitionRate"),
+                            "onchange": save_metadata(
+                                lightSource.id, "repetitionRate"
+                            ),
                         }
                     ),
                     initial=lightSource.repetitionRate.getValue(),
                     label=(
-                        "Repetition rate (%s)" % lightSource.repetitionRate.getSymbol()
+                        "Repetition rate (%s)"
+                        % lightSource.repetitionRate.getSymbol()
                     ),
                     required=False,
                 )
@@ -3333,7 +3516,9 @@ class MetadataLightSourceForm(forms.Form):
                     widget=forms.TextInput(
                         attrs={
                             "size": 25,
-                            "onchange": save_metadata(lightSource.id, "repetitionRate"),
+                            "onchange": save_metadata(
+                                lightSource.id, "repetitionRate"
+                            ),
                         }
                     ),
                     label="Repetition rate",
@@ -3458,7 +3643,9 @@ class MetadataEnvironmentForm(forms.Form):
                         }
                     ),
                     initial=imagingEnv.temperature.getValue(),
-                    label=("Temperature (%s)" % imagingEnv.temperature.getSymbol()),
+                    label=(
+                        "Temperature (%s)" % imagingEnv.temperature.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -3498,7 +3685,10 @@ class MetadataEnvironmentForm(forms.Form):
                         }
                     ),
                     initial=imagingEnv.airPressure.getValue(),
-                    label=("Air Pressure (%s)" % imagingEnv.airPressure.getSymbol()),
+                    label=(
+                        "Air Pressure (%s)"
+                        % imagingEnv.airPressure.getSymbol()
+                    ),
                     required=False,
                 )
             else:
@@ -3607,7 +3797,12 @@ class MetadataEnvironmentForm(forms.Form):
             )
             set_widget_attrs(self.fields["co2percent"])
 
-        self.fields.keyOrder = ["airPressure", "co2percent", "humidity", "temperature"]
+        self.fields.keyOrder = [
+            "airPressure",
+            "co2percent",
+            "humidity",
+            "temperature",
+        ]
 
 
 class MetadataStageLabelForm(forms.Form):
@@ -3629,7 +3824,9 @@ class MetadataStageLabelForm(forms.Form):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["image"].getStageLabel().positionx,
+                    initial=kwargs["initial"]["image"]
+                    .getStageLabel()
+                    .positionx,
                     label="Position X",
                     required=False,
                 )
@@ -3671,7 +3868,9 @@ class MetadataStageLabelForm(forms.Form):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["image"].getStageLabel().positiony,
+                    initial=kwargs["initial"]["image"]
+                    .getStageLabel()
+                    .positiony,
                     label="Position Y",
                     required=False,
                 )
@@ -3713,7 +3912,9 @@ class MetadataStageLabelForm(forms.Form):
                             ),
                         }
                     ),
-                    initial=kwargs["initial"]["image"].getStageLabel().positionz,
+                    initial=kwargs["initial"]["image"]
+                    .getStageLabel()
+                    .positionz,
                     label="Position Z",
                     required=False,
                 )

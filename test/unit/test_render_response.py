@@ -79,7 +79,11 @@ class TestRenderResponse(object):
                 ["/webclient/"],
             ],
             [
-                ["Data3", {"viewname": "load_template", "args": ["userdata"]}, {}],
+                [
+                    "Data3",
+                    {"viewname": "load_template", "args": ["userdata"]},
+                    {},
+                ],
                 ["/webclient/userdata/"],
             ],
             [
@@ -104,9 +108,15 @@ class TestRenderResponse(object):
                     },
                     {},
                 ],
-                ["/webclient/userdata/?%s" % urlencode({"test": QUERY_STRING})],
+                [
+                    "/webclient/userdata/?%s"
+                    % urlencode({"test": QUERY_STRING})
+                ],
             ],
-            [["History", "history", {"title": "History"}], ["/webclient/history/"]],
+            [
+                ["History", "history", {"title": "History"}],
+                ["/webclient/history/"],
+            ],
             [
                 ["HELP", "https://help.openmicroscopy.org", {"title": "Help"}],
                 ["https://help.openmicroscopy.org"],
@@ -115,7 +125,10 @@ class TestRenderResponse(object):
             [["", None, {}], [None]],
             [["Foo", "bar", {}], ["bar"]],
             [["Foo", {"viewname": "foo"}, {}], [""]],
-            [["Foo", {"viewname": "load_template", "args": ["bar"]}, {}], [""]],
+            [
+                ["Foo", {"viewname": "load_template", "args": ["bar"]}, {}],
+                [""],
+            ],
         ],
     )
     def test_load_settings(self, top_links):

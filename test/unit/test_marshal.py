@@ -59,7 +59,8 @@ def basic_arrow(basic_line):
         # OME-XML version of the points
         "1,2 2,3 4,5",
         # OMERO.insight version of the points
-        "points[1,2 2,3 4,5] points1[1,2 2,3 4,5] " "points2[1,2 2,3 4,5] mask[0,0,0]",
+        "points[1,2 2,3 4,5] points1[1,2 2,3 4,5] "
+        "points2[1,2 2,3 4,5] mask[0,0,0]",
     ],
 )
 def basic_polyline(request, default_id):
@@ -96,7 +97,8 @@ def float_polyline(request, default_id):
         # OME-XML version of the points
         "1,2 2,3 4,5",
         # OMERO.insight version of the points
-        "points[1,2 2,3 4,5] points1[1,2 2,3 4,5] " "points2[1,2 2,3 4,5] mask[0,0,0]",
+        "points[1,2 2,3 4,5] points1[1,2 2,3 4,5] "
+        "points2[1,2 2,3 4,5] mask[0,0,0]",
     ],
 )
 def basic_polygon(request, default_id):

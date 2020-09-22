@@ -45,7 +45,8 @@ def get_wellsample_indices(conn, plate_id=None, plateacquisition_id=None):
     ctx.setOmeroGroup(-1)
     params = ParametersI()
     query = (
-        "select minIndex(ws), maxIndex(ws) from Well well " "join well.wellSamples ws"
+        "select minIndex(ws), maxIndex(ws) from Well well "
+        "join well.wellSamples ws"
     )
     if plate_id is not None:
         query += " where well.plate.id=:plate_id "

@@ -55,7 +55,9 @@ def redirect_urlpatterns():
             url(
                 r"^$",
                 never_cache(
-                    RedirectView.as_view(url=reverse_lazy("webindex"), permanent=True)
+                    RedirectView.as_view(
+                        url=reverse_lazy("webindex"), permanent=True
+                    )
                 ),
                 name="index",
             )
@@ -118,7 +120,9 @@ OMERO.web are compatible
 urlpatterns += [
     url(
         r"^favicon\.ico$",
-        lambda request: redirect("%swebgateway/img/ome.ico" % settings.STATIC_URL),
+        lambda request: redirect(
+            "%swebgateway/img/ome.ico" % settings.STATIC_URL
+        ),
     ),
     url(r"^(?i)webgateway/", include("omeroweb.webgateway.urls")),
     url(r"^(?i)webadmin/", include("omeroweb.webadmin.urls")),

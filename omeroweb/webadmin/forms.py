@@ -48,7 +48,9 @@ logger = logging.getLogger(__name__)
 class LoginForm(NonASCIIForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields["server"] = ServerModelChoiceField(Server, empty_label=None)
+        self.fields["server"] = ServerModelChoiceField(
+            Server, empty_label=None
+        )
 
         self.fields.keyOrder = ["server", "username", "password"]
 
@@ -70,7 +72,9 @@ class LoginForm(NonASCIIForm):
 class ForgottonPasswordForm(NonASCIIForm):
     def __init__(self, *args, **kwargs):
         super(ForgottonPasswordForm, self).__init__(*args, **kwargs)
-        self.fields["server"] = ServerModelChoiceField(Server, empty_label=None)
+        self.fields["server"] = ServerModelChoiceField(
+            Server, empty_label=None
+        )
         f = forms.CharField(
             max_length=50,
             widget=forms.TextInput(attrs={"size": 28, "autocomplete": "off"}),
@@ -115,7 +119,9 @@ class ExperimenterForm(NonASCIIForm):
             )
         except Exception:
             self.fields["other_groups"] = GroupModelMultipleChoiceField(
-                queryset=kwargs["initial"]["groups"], required=False, label="Groups"
+                queryset=kwargs["initial"]["groups"],
+                required=False,
+                label="Groups",
             )
 
         try:
@@ -150,14 +156,21 @@ class ExperimenterForm(NonASCIIForm):
             initial="user",
         )
 
-        if "with_password" in kwargs["initial"] and kwargs["initial"]["with_password"]:
+        if (
+            "with_password" in kwargs["initial"]
+            and kwargs["initial"]["with_password"]
+        ):
             self.fields["password"] = forms.CharField(
                 max_length=50,
-                widget=forms.PasswordInput(attrs={"size": 30, "autocomplete": "off"}),
+                widget=forms.PasswordInput(
+                    attrs={"size": 30, "autocomplete": "off"}
+                ),
             )
             self.fields["confirmation"] = forms.CharField(
                 max_length=50,
-                widget=forms.PasswordInput(attrs={"size": 30, "autocomplete": "off"}),
+                widget=forms.PasswordInput(
+                    attrs={"size": 30, "autocomplete": "off"}
+                ),
             )
 
             fields_key_order = [
@@ -236,7 +249,9 @@ class ExperimenterForm(NonASCIIForm):
             )
             self.fields["role"].widget.attrs["disabled"] = True
             self.fields["active"].widget.attrs["disabled"] = True
-            self.fields["active"].widget.attrs["title"] = "You cannot disable %s" % name
+            self.fields["active"].widget.attrs["title"] = (
+                "You cannot disable %s" % name
+            )
 
         # If we can't modify user, ALL fields are disabled
         if not can_modify_user:
@@ -279,7 +294,9 @@ class ExperimenterForm(NonASCIIForm):
                 raise forms.ValidationError(
                     "Password must be at least 3 characters long."
                 )
-        if self.cleaned_data.get("password") or self.cleaned_data.get("confirmation"):
+        if self.cleaned_data.get("password") or self.cleaned_data.get(
+            "confirmation"
+        ):
             if self.cleaned_data.get("password") != self.cleaned_data.get(
                 "confirmation"
             ):
@@ -311,7 +328,9 @@ class ExperimenterForm(NonASCIIForm):
             self.cleaned_data.get("other_groups") is None
             or len(self.cleaned_data.get("other_groups")) <= 0
         ):
-            raise forms.ValidationError("User must be a member of at least one group.")
+            raise forms.ValidationError(
+                "User must be a member of at least one group."
+            )
         else:
             return self.cleaned_data.get("other_groups")
 
@@ -341,12 +360,16 @@ class GroupForm(NonASCIIForm):
 
             self.fields["name"] = forms.CharField(
                 max_length=100,
-                widget=forms.TextInput(attrs={"size": 25, "autocomplete": "off"}),
+                widget=forms.TextInput(
+                    attrs={"size": 25, "autocomplete": "off"}
+                ),
             )
             self.fields["description"] = forms.CharField(
                 max_length=250,
                 required=False,
-                widget=forms.TextInput(attrs={"size": 25, "autocomplete": "off"}),
+                widget=forms.TextInput(
+                    attrs={"size": 25, "autocomplete": "off"}
+                ),
             )
         if can_add_member:
             try:
@@ -548,7 +571,9 @@ class UploadPhotoForm(forms.Form):
                 " jpeg, jpg, gif, png."
             )
         if self.cleaned_data.get("photo").size > 204800:
-            raise forms.ValidationError("The maximum image size allowed is 200KB.")
+            raise forms.ValidationError(
+                "The maximum image size allowed is 200KB."
+            )
         return self.cleaned_data.get("photo")
 
 
@@ -571,7 +596,9 @@ class ChangePassword(NonASCIIForm):
     )
 
     def clean_confirmation(self):
-        if self.cleaned_data.get("password") or self.cleaned_data.get("confirmation"):
+        if self.cleaned_data.get("password") or self.cleaned_data.get(
+            "confirmation"
+        ):
             if len(self.cleaned_data.get("password")) < 3:
                 raise forms.ValidationError(
                     "Password must be at least 3" " characters long."
@@ -642,7 +669,9 @@ class EmailForm(forms.Form):
     message = forms.CharField(widget=Textarea, required=True)
 
     # Include/Exclude inactive users
-    inactive = forms.BooleanField(label="Include inactive users", required=False)
+    inactive = forms.BooleanField(
+        label="Include inactive users", required=False
+    )
 
     def __init__(self, experimenters, groups, conn, request, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)
@@ -661,7 +690,9 @@ class EmailForm(forms.Form):
             for experimenter in experimenters
         ]
 
-        self.fields["groups"].choices = [(group.id, group.name) for group in groups]
+        self.fields["groups"].choices = [
+            (group.id, group.name) for group in groups
+        ]
 
         self.conn = conn
         self.request = request

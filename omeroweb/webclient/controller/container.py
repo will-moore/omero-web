@@ -103,9 +103,15 @@ class BaseContainer(BaseController):
             self.assertNotNone(self.plate._obj, plate, "Plate")
         if acquisition is not None:
             self.obj_type = "acquisition"
-            self.acquisition = self.conn.getObject("PlateAcquisition", acquisition)
-            self.assertNotNone(self.acquisition, acquisition, "Plate Acquisition")
-            self.assertNotNone(self.acquisition._obj, acquisition, "Plate Acquisition")
+            self.acquisition = self.conn.getObject(
+                "PlateAcquisition", acquisition
+            )
+            self.assertNotNone(
+                self.acquisition, acquisition, "Plate Acquisition"
+            )
+            self.assertNotNone(
+                self.acquisition._obj, acquisition, "Plate Acquisition"
+            )
         if image is not None:
             self.obj_type = "image"
             self.image = self.conn.getObject("Image", image)
@@ -214,7 +220,9 @@ class BaseContainer(BaseController):
         if self.plate is not None:
             return self.plate.getNumberOfFields()
         elif self.acquisition:
-            p = self.conn.getObject("Plate", self.acquisition._obj.plate.id.val)
+            p = self.conn.getObject(
+                "Plate", self.acquisition._obj.plate.id.val
+            )
             return p.getNumberOfFields(self.acquisition.getId())
 
     def getPlateId(self):
@@ -243,7 +251,9 @@ class BaseContainer(BaseController):
         """
         can = True
         try:
-            limit = request.session["server_settings"]["download_as"]["max_size"]
+            limit = request.session["server_settings"]["download_as"][
+                "max_size"
+            ]
         except Exception:
             limit = 144000000
         if self.image:
@@ -256,7 +266,11 @@ class BaseContainer(BaseController):
                 for i in objDict["image"]:
                     sizex = i.getSizeX()
                     sizey = i.getSizeY()
-                    if sizex is None or sizey is None or (sizex * sizey) > limit:
+                    if (
+                        sizex is None
+                        or sizey is None
+                        or (sizex * sizey) > limit
+                    ):
                         can = False
         return can
 
@@ -339,14 +353,18 @@ class BaseContainer(BaseController):
             "id": "Thumbnail",
             "name": "Thumbnail Figure",
             "enabled": False,
-            "tooltip": ("Export a figure of thumbnails, optionally sorted by" " tag"),
+            "tooltip": (
+                "Export a figure of thumbnails, optionally sorted by" " tag"
+            ),
         }
         # Thumbnail figure is enabled if we have Datasets or Images selected
         if self.image or self.dataset or self.well:
             thumbnailFig["enabled"] = "Thumbnail_Figure.py" in availableScripts
         elif objDict is not None:
             if "image" in objDict or "dataset" in objDict:
-                thumbnailFig["enabled"] = "Thumbnail_Figure.py" in availableScripts
+                thumbnailFig["enabled"] = (
+                    "Thumbnail_Figure.py" in availableScripts
+                )
 
         makeMovie = {
             "id": "MakeMovie",
@@ -419,9 +437,10 @@ class BaseContainer(BaseController):
                 self.experimenter = self.conn.getObject("Experimenter", eid)
         else:
             eid = self.conn.getEventContext().userId
-        self.tags_recursive, self.tags_recursive_owners = self.conn.listTagsRecursive(
-            eid, offset, limit
-        )
+        (
+            self.tags_recursive,
+            self.tags_recursive_owners,
+        ) = self.conn.listTagsRecursive(eid, offset, limit)
 
     def getTagCount(self, eid=None):
         return self.conn.getTagCount(eid)
@@ -474,13 +493,17 @@ class BaseContainer(BaseController):
         perms = str(group.getDetails().getPermissions())
         if perms in ("rwrw--", "rwra--"):
             return True
-        if perms == "rwr---" and (self.conn.isAdmin() or self.conn.isLeader(group.id)):
+        if perms == "rwr---" and (
+            self.conn.isAdmin() or self.conn.isLeader(group.id)
+        ):
             return True
         return False
 
     def getFilesByObject(self, parent_type=None, parent_ids=None):
         eid = (
-            (not self.canUseOthersAnns()) and self.conn.getEventContext().userId or None
+            (not self.canUseOthersAnns())
+            and self.conn.getEventContext().userId
+            or None
         )
         ns = [
             omero.constants.namespaces.NSCOMPANIONFILE,
@@ -497,15 +520,21 @@ class BaseContainer(BaseController):
 
         if self.image is not None:
             return sort_file_anns(
-                self.image.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.image.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif self.dataset is not None:
             return sort_file_anns(
-                self.dataset.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.dataset.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif self.project is not None:
             return sort_file_anns(
-                self.project.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.project.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif self.well is not None:
             return sort_file_anns(
@@ -515,15 +544,21 @@ class BaseContainer(BaseController):
             )
         elif self.plate is not None:
             return sort_file_anns(
-                self.plate.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.plate.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif self.screen is not None:
             return sort_file_anns(
-                self.screen.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.screen.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif self.acquisition is not None:
             return sort_file_anns(
-                self.acquisition.listOrphanedAnnotations(eid=eid, ns=ns, anntype="File")
+                self.acquisition.listOrphanedAnnotations(
+                    eid=eid, ns=ns, anntype="File"
+                )
             )
         elif parent_type and parent_ids:
             parent_type = parent_type.title()
@@ -552,7 +587,10 @@ class BaseContainer(BaseController):
 
     def createTag(self, name, description=None, owner=None):
         tId = self.conn.createContainer("tag", name, description, owner=owner)
-        if self.tag and self.tag.getNs() == omero.constants.metadata.NSINSIGHTTAGSET:
+        if (
+            self.tag
+            and self.tag.getNs() == omero.constants.metadata.NSINSIGHTTAGSET
+        ):
             ctx = self.conn.SERVICE_OPTS.copy()
             if owner is not None:
                 ctx.setOmeroUser(owner)
@@ -589,7 +627,9 @@ class BaseContainer(BaseController):
             self.conn.saveArray(new_links)
         return ann.getId()
 
-    def createTagAnnotations(self, tag, desc, oids, well_index=0, tag_group_id=None):
+    def createTagAnnotations(
+        self, tag, desc, oids, well_index=0, tag_group_id=None
+    ):
         """
         Creates a new tag (with description) OR uses existing tag with the
         specified name if found.
@@ -612,7 +652,9 @@ class BaseContainer(BaseController):
             if tag_group_id:  # Put new tag in given tag set
                 tag_group = None
                 try:
-                    tag_group = self.conn.getObject("TagAnnotation", tag_group_id)
+                    tag_group = self.conn.getObject(
+                        "TagAnnotation", tag_group_id
+                    )
                 except Exception:
                     pass
                 if tag_group is not None:
@@ -713,16 +755,23 @@ class BaseContainer(BaseController):
                 params.theFilter = omero.sys.Filter()
                 params.theFilter.ownerId = rlong(self.conn.getUserId())
                 links = self.conn.getAnnotationLinks(
-                    parent_type, parent_ids=parent_ids, ann_ids=tids, params=params
+                    parent_type,
+                    parent_ids=parent_ids,
+                    ann_ids=tids,
+                    params=params,
                 )
-                pcLinks = [(link.parent.id.val, link.child.id.val) for link in links]
+                pcLinks = [
+                    (link.parent.id.val, link.child.id.val) for link in links
+                ]
                 # Create link between each object and annotation
                 for obj in self.conn.getObjects(parent_type, parent_ids):
                     parent_objs.append(obj)
                     for a in annotations:
                         if (obj.id, a.id) in pcLinks:
                             continue  # link already exists
-                        l_ann = getattr(omero.model, parent_type + "AnnotationLinkI")()
+                        l_ann = getattr(
+                            omero.model, parent_type + "AnnotationLinkI"
+                        )()
                         l_ann.setParent(obj._obj)
                         l_ann.setChild(a._obj)
                         new_links.append(l_ann)
@@ -884,18 +933,29 @@ class BaseContainer(BaseController):
     def deleteItem(self, child=False, anns=False):
         handle = None
         if self.image:
-            handle = self.conn.deleteObjects("Image", [self.image.id], deleteAnns=anns)
+            handle = self.conn.deleteObjects(
+                "Image", [self.image.id], deleteAnns=anns
+            )
         elif self.dataset:
             handle = self.conn.deleteObjects(
-                "Dataset", [self.dataset.id], deleteChildren=child, deleteAnns=anns
+                "Dataset",
+                [self.dataset.id],
+                deleteChildren=child,
+                deleteAnns=anns,
             )
         elif self.project:
             handle = self.conn.deleteObjects(
-                "Project", [self.project.id], deleteChildren=child, deleteAnns=anns
+                "Project",
+                [self.project.id],
+                deleteChildren=child,
+                deleteAnns=anns,
             )
         elif self.screen:
             handle = self.conn.deleteObjects(
-                "Screen", [self.screen.id], deleteChildren=child, deleteAnns=anns
+                "Screen",
+                [self.screen.id],
+                deleteChildren=child,
+                deleteAnns=anns,
             )
         elif self.plate:
             handle = self.conn.deleteObjects(

@@ -90,11 +90,17 @@ class BaseSearch(BaseController):
 
                     created = [
                         rtime(
-                            long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond)
+                            long(
+                                time.mktime(d1.timetuple())
+                                + 1e-6 * d1.microsecond
+                            )
                             * 1000
                         ),
                         rtime(
-                            long(time.mktime(d2.timetuple()) + 1e-6 * d2.microsecond)
+                            long(
+                                time.mktime(d2.timetuple())
+                                + 1e-6 * d2.microsecond
+                            )
                             * 1000
                         ),
                     ]

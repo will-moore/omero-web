@@ -276,7 +276,10 @@ def timeformat(value):
         return "%d\u00A0min\u00A0%d\u00A0s" % (value / 60, value % 60)
     else:
         value = round(value)  # Avoids '1h 60min'
-        return "%d\u00A0h\u00A0%d\u00A0min" % (value / 3600, round((value % 3600) / 60))
+        return "%d\u00A0h\u00A0%d\u00A0min" % (
+            value / 3600,
+            round((value % 3600) / 60),
+        )
 
 
 # taken from https://code.djangoproject.com/ticket/17419

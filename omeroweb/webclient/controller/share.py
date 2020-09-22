@@ -93,47 +93,63 @@ class BaseShare(BaseController):
         """
         return self.share.getId()
 
-    def createShare(self, host, images, message, members, enable, expiration=None):
+    def createShare(
+        self, host, images, message, members, enable, expiration=None
+    ):
         expiration_date = None
         if expiration is not None:
             d1 = datetime.datetime.strptime(
                 expiration + " 23:59:59", "%Y-%m-%d %H:%M:%S"
             )
             expiration_date = (
-                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond)
+                * 1000
             )
         image_objects = list(self.conn.getObjects("Image", images))
         member_objects = list(self.conn.getObjects("Experimenter", members))
         return self.conn.createShare(
-            host, image_objects, message, member_objects, enable, expiration_date
+            host,
+            image_objects,
+            message,
+            member_objects,
+            enable,
+            expiration_date,
         )
 
-    def createDiscussion(self, host, message, members, enable, expiration=None):
+    def createDiscussion(
+        self, host, message, members, enable, expiration=None
+    ):
         expiration_date = None
         if expiration is not None:
             d1 = datetime.datetime.strptime(
                 expiration + " 23:59:59", "%Y-%m-%d %H:%M:%S"
             )
             expiration_date = rtime(
-                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond)
+                * 1000
             )
         member_objects = list(self.conn.getObjects("Experimenter", members))
         return self.conn.createShare(
             host, [], message, member_objects, enable, expiration_date
         )
 
-    def updateShareOrDiscussion(self, host, message, members, enable, expiration=None):
+    def updateShareOrDiscussion(
+        self, host, message, members, enable, expiration=None
+    ):
         expiration_date = None
         if expiration is not None:
             d1 = datetime.datetime.strptime(
                 expiration + " 23:59:59", "%Y-%m-%d %H:%M:%S"
             )
             expiration_date = (
-                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond) * 1000
+                long(time.mktime(d1.timetuple()) + 1e-6 * d1.microsecond)
+                * 1000
             )
 
         old_groups = [m._obj for m in self.conn.getAllMembers(self.share.id)]
-        new_groups = [e._obj for e in self.conn.getObjects("Experimenter", members)]
+        new_groups = [
+            e._obj for e in self.conn.getObjects("Experimenter", members)
+        ]
 
         add_mem = list()
         rm_mem = list()
@@ -157,7 +173,13 @@ class BaseShare(BaseController):
                 add_mem.append(ngr)
 
         return self.conn.updateShareOrDiscussion(
-            host, self.share.id, message, add_mem, rm_mem, enable, expiration_date
+            host,
+            self.share.id,
+            message,
+            add_mem,
+            rm_mem,
+            enable,
+            expiration_date,
         )
 
     def addComment(self, host, comment):

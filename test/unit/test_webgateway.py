@@ -70,7 +70,9 @@ class TestFileCache(object):
         self.cache = FileCache("test_cache")
 
     def testTimeouts(self):
-        assert self.cache.get("date/test/1") is None, "Key already exists in cache"
+        assert (
+            self.cache.get("date/test/1") is None
+        ), "Key already exists in cache"
         self.cache.set("date/test/1", "1", timeout=3)
         assert self.cache.get("date/test/1") == "1", "Key not properly cached"
         time.sleep(4)
@@ -78,12 +80,16 @@ class TestFileCache(object):
         # if _default_timeout is 0, timeouts are simply not checked
         self.cache.wipe()
         self.cache._default_timeout = 0
-        assert self.cache.get("date/test/1") is None, "Key already exists in cache"
+        assert (
+            self.cache.get("date/test/1") is None
+        ), "Key already exists in cache"
         self.cache.set("date/test/1", "1", timeout=3)
         assert self.cache.get("date/test/1") == "1", "Key not properly cached"
         time.sleep(4)
         assert self.cache.has_key("date/test/1")  # noqa
-        assert self.cache.get("date/test/1") == "1", "Key got timedout and should not"
+        assert (
+            self.cache.get("date/test/1") == "1"
+        ), "Key got timedout and should not"
 
     def testMaxSize(self):
         empty_size, cache_block = _testCacheFSBlockSize(self.cache)
@@ -94,7 +100,8 @@ class TestFileCache(object):
             self.cache.set("date/test/%d" % i, "abcdefgh" * 127 * cache_block)
         for i in range(4):
             assert (
-                self.cache.get("date/test/%d" % i) == "abcdefgh" * 127 * cache_block
+                self.cache.get("date/test/%d" % i)
+                == "abcdefgh" * 127 * cache_block
             ), ("Key %d not properly cached" % i)
         assert self.cache.get("date/test/5") is None, "Size limit failed"
         self.cache._max_size = 0
@@ -103,7 +110,8 @@ class TestFileCache(object):
             self.cache.set("date/test/%d" % i, "abcdefgh" * 127 * cache_block)
         for i in range(6):
             assert (
-                self.cache.get("date/test/%d" % i) == "abcdefgh" * 127 * cache_block
+                self.cache.get("date/test/%d" % i)
+                == "abcdefgh" * 127 * cache_block
             ), ("Key %d not properly cached" % i)
 
     def testMaxEntries(self):
@@ -113,7 +121,9 @@ class TestFileCache(object):
         self.cache.set("date/test/3", "3")
         assert self.cache.get("date/test/1") == "1", "Key not properly cached"
         assert self.cache.get("date/test/2") == "2", "Key not properly cached"
-        assert self.cache.get("date/test/3") is None, "File number limit failed"
+        assert (
+            self.cache.get("date/test/3") is None
+        ), "File number limit failed"
         self.cache.wipe()
         self.cache._max_entries = 0
         self.cache.set("date/test/1", "1")
@@ -131,7 +141,9 @@ class TestFileCache(object):
         self.cache.set("date/test/3", "3")
         assert self.cache.get("date/test/1") == "1", "Key not properly cached"
         assert self.cache.get("date/test/2") == "2", "Key not properly cached"
-        assert self.cache.get("date/test/3") is None, "File number limit failed"
+        assert (
+            self.cache.get("date/test/3") is None
+        ), "File number limit failed"
         time.sleep(4)
         self.cache.set("date/test/3", "3")
         assert self.cache.get("date/test/3") == "3", "Purge not working"
@@ -180,7 +192,8 @@ class TestWebGatewayCacheTempFile(object):
         except Exception:
             raise
             pytest.fail(
-                "WebGatewayTempFile.new not handling special" " characters properly"
+                "WebGatewayTempFile.new not handling special"
+                " characters properly"
             )
         # ext2/3/4 limit is 255 bytes, most others are equal to or larger
         fname = "a" * 384
@@ -188,7 +201,9 @@ class TestWebGatewayCacheTempFile(object):
             fpath, rpath, fobj = self.tmpfile.new(fname, key="longname")
             fobj.close()
             # is it keeping extensions properly?
-            fpath, rpath, fobj = self.tmpfile.new("1" + fname + ".tif", key="longname")
+            fpath, rpath, fobj = self.tmpfile.new(
+                "1" + fname + ".tif", key="longname"
+            )
             fobj.close()
             assert fpath[-5:] == "a.tif"
             fpath, rpath, fobj = self.tmpfile.new(
@@ -213,7 +228,8 @@ class TestWebGatewayCacheTempFile(object):
             assert fpath[-5:] == "aaaaa"
         except Exception:
             pytest.fail(
-                "WebGatewayTempFile.new not handling long file names" " properly"
+                "WebGatewayTempFile.new not handling long file names"
+                " properly"
             )
 
 
@@ -254,24 +270,28 @@ class TestWebGatewayCache(object):
             self.wcache.setThumb(self.request, "test", uid, i, cachestr)
         max_size = self.wcache._thumb_cache._du()
         self.wcache._updateCacheSettings(
-            self.wcache._thumb_cache, timeout=2, max_entries=5, max_size=max_size
+            self.wcache._thumb_cache,
+            timeout=2,
+            max_entries=5,
+            max_size=max_size,
         )
         self.wcache._thumb_cache.wipe()
         for i in range(6):
             self.wcache.setThumb(self.request, "test", uid, i, cachestr)
         for i in range(4):
-            assert self.wcache.getThumb(self.request, "test", uid, i) == cachestr, (
-                "Key %d not properly cached" % i
-            )
+            assert (
+                self.wcache.getThumb(self.request, "test", uid, i) == cachestr
+            ), ("Key %d not properly cached" % i)
         assert (
             self.wcache.getThumb(self.request, "test", uid, 5) is None
         ), "Size limit failed"
         for i in range(10):
             self.wcache.setThumb(self.request, "test", uid, i, "abcdefgh")
         for i in range(5):
-            assert self.wcache.getThumb(self.request, "test", uid, i) == "abcdefgh", (
-                "Key %d not properly cached" % i
-            )
+            assert (
+                self.wcache.getThumb(self.request, "test", uid, i)
+                == "abcdefgh"
+            ), ("Key %d not properly cached" % i)
         assert (
             self.wcache.getThumb(self.request, "test", uid, 5) is None
         ), "Entries limit failed"
@@ -307,54 +327,85 @@ class TestWebGatewayCache(object):
         preq = self.request.new({"p": "intmax"})
         assert self.wcache.getThumb(self.request, "test", uid, 1) is None
         self.wcache.setThumb(self.request, "test", uid, 1, "thumbdata")
-        assert self.wcache.getThumb(self.request, "test", uid, 1) == "thumbdata"
+        assert (
+            self.wcache.getThumb(self.request, "test", uid, 1) == "thumbdata"
+        )
         img = omero.gateway.ImageWrapper(None, omero.model.ImageI(1, False))
         assert self.wcache.getImage(self.request, "test", img, 2, 3) is None
         self.wcache.setImage(self.request, "test", img, 2, 3, "imagedata")
-        assert self.wcache.getImage(self.request, "test", img, 2, 3) == "imagedata"
+        assert (
+            self.wcache.getImage(self.request, "test", img, 2, 3)
+            == "imagedata"
+        )
         assert self.wcache.getImage(preq, "test", img, 2, 3) is None
         self.wcache.setImage(preq, "test", img, 2, 3, "imagedata")
         assert self.wcache.getImage(preq, "test", img, 2, 3) == "imagedata"
-        assert self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3) is None
-        self.wcache.setSplitChannelImage(self.request, "test", img, 2, 3, "imagedata")
+        assert (
+            self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
+            is None
+        )
+        self.wcache.setSplitChannelImage(
+            self.request, "test", img, 2, 3, "imagedata"
+        )
         assert (
             self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
             == "imagedata"
         )
         self.wcache.clearImage(self.request, "test", uid, img)
         assert self.wcache.getImage(self.request, "test", img, 2, 3) is None
-        assert self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3) is None
+        assert (
+            self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
+            is None
+        )
         assert self.wcache.getImage(preq, "test", img, 2, 3) is None
         assert self.wcache.getThumb(self.request, "test", uid, 1) is None
         # The exact same behaviour, using invalidateObject
         self.wcache.setThumb(self.request, "test", uid, 1, "thumbdata")
-        assert self.wcache.getThumb(self.request, "test", uid, 1) == "thumbdata"
+        assert (
+            self.wcache.getThumb(self.request, "test", uid, 1) == "thumbdata"
+        )
         self.wcache.setImage(self.request, "test", img, 2, 3, "imagedata")
-        assert self.wcache.getImage(self.request, "test", img, 2, 3) == "imagedata"
+        assert (
+            self.wcache.getImage(self.request, "test", img, 2, 3)
+            == "imagedata"
+        )
         assert self.wcache.getImage(preq, "test", img, 2, 3) is None
         self.wcache.setImage(preq, "test", img, 2, 3, "imagedata")
         assert self.wcache.getImage(preq, "test", img, 2, 3) == "imagedata"
-        assert self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3) is None
-        self.wcache.setSplitChannelImage(self.request, "test", img, 2, 3, "imagedata")
+        assert (
+            self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
+            is None
+        )
+        self.wcache.setSplitChannelImage(
+            self.request, "test", img, 2, 3, "imagedata"
+        )
         assert (
             self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
             == "imagedata"
         )
         self.wcache.invalidateObject("test", uid, img)
         assert self.wcache.getImage(self.request, "test", img, 2, 3) is None
-        assert self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3) is None
+        assert (
+            self.wcache.getSplitChannelImage(self.request, "test", img, 2, 3)
+            is None
+        )
         assert self.wcache.getImage(preq, "test", img, 2, 3) is None
         assert self.wcache.getThumb(self.request, "test", uid, 1) is None
         # Make sure clear() nukes this
         assert self.wcache.getImage(self.request, "test", img, 2, 3) is None
         self.wcache.setImage(self.request, "test", img, 2, 3, "imagedata")
-        assert self.wcache.getImage(self.request, "test", img, 2, 3) == "imagedata"
+        assert (
+            self.wcache.getImage(self.request, "test", img, 2, 3)
+            == "imagedata"
+        )
         assert self.wcache._img_cache._num_entries != 0
         self.wcache.clear()
         assert self.wcache._img_cache._num_entries == 0
 
     def testLocks(self):
-        wcache2 = WebGatewayCache(backend=FileCache, basedir=self.wcache._basedir)
+        wcache2 = WebGatewayCache(
+            backend=FileCache, basedir=self.wcache._basedir
+        )
         # wcache2 will hold the lock
         assert wcache2.tryLock()
         assert not self.wcache.tryLock()
@@ -368,19 +419,28 @@ class TestWebGatewayCache(object):
         ds = omero.gateway.DatasetWrapper(None, omero.model.DatasetI(1, False))
         assert self.wcache.getDatasetContents(self.request, "test", ds) is None
         self.wcache.setDatasetContents(self.request, "test", ds, "datasetdata")
-        assert self.wcache.getDatasetContents(self.request, "test", ds) == "datasetdata"
+        assert (
+            self.wcache.getDatasetContents(self.request, "test", ds)
+            == "datasetdata"
+        )
         self.wcache.clearDatasetContents(self.request, "test", ds)
         assert self.wcache.getDatasetContents(self.request, "test", ds) is None
         # The exact same behaviour, using invalidateObject
         assert self.wcache.getDatasetContents(self.request, "test", ds) is None
         self.wcache.setDatasetContents(self.request, "test", ds, "datasetdata")
-        assert self.wcache.getDatasetContents(self.request, "test", ds) == "datasetdata"
+        assert (
+            self.wcache.getDatasetContents(self.request, "test", ds)
+            == "datasetdata"
+        )
         self.wcache.invalidateObject("test", uid, ds)
         assert self.wcache.getDatasetContents(self.request, "test", ds) is None
         # Make sure clear() nukes this
         assert self.wcache.getDatasetContents(self.request, "test", ds) is None
         self.wcache.setDatasetContents(self.request, "test", ds, "datasetdata")
-        assert self.wcache.getDatasetContents(self.request, "test", ds) == "datasetdata"
+        assert (
+            self.wcache.getDatasetContents(self.request, "test", ds)
+            == "datasetdata"
+        )
         assert self.wcache._json_cache._num_entries != 0
         self.wcache.clear()
         assert self.wcache._json_cache._num_entries == 0

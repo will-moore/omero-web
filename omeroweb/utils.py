@@ -49,4 +49,6 @@ def reverse_with_params(*args, **kwargs):
 
 
 def sort_properties_to_tuple(input_list, index="index", element="class"):
-    return tuple(e[element] for e in sorted(input_list, key=lambda k: k[index]))
+    return tuple(
+        e[element] for e in sorted(input_list, key=lambda k: k[index])
+    )

@@ -66,7 +66,9 @@ class login_required(omeroweb.decorators.login_required):
         self.prepare_session(request)
         if self.setGroupContext:
             if request.session.get("active_group"):
-                conn.SERVICE_OPTS.setOmeroGroup(request.session.get("active_group"))
+                conn.SERVICE_OPTS.setOmeroGroup(
+                    request.session.get("active_group")
+                )
             else:
                 conn.SERVICE_OPTS.setOmeroGroup(conn.getEventContext().groupId)
 
@@ -82,7 +84,9 @@ class login_required(omeroweb.decorators.login_required):
                 url = reverse(self.login_redirect)
             except Exception:
                 pass
-        return super(login_required, self).on_not_logged_in(request, url, error)
+        return super(login_required, self).on_not_logged_in(
+            request, url, error
+        )
 
     def prepare_session(self, request):
         """Prepares various session variables."""
@@ -134,9 +138,13 @@ class render_response(omeroweb.decorators.render_response):
         public_user = omeroweb.decorators.is_public_user(request)
         if public_user is not None:
             context["ome"]["is_public_user"] = public_user
-        context["ome"]["eventContext"] = eventContextMarshal(conn.getEventContext())
+        context["ome"]["eventContext"] = eventContextMarshal(
+            conn.getEventContext()
+        )
         context["ome"]["user"] = conn.getUser
-        context["ome"]["user_id"] = request.session.get("user_id", conn.getUserId())
+        context["ome"]["user_id"] = request.session.get(
+            "user_id", conn.getUserId()
+        )
         context["ome"]["group_id"] = request.session.get("group_id", None)
         context["ome"]["active_group"] = request.session.get(
             "active_group", conn.getEventContext().groupId
@@ -145,9 +153,9 @@ class render_response(omeroweb.decorators.render_response):
         context["ome"]["can_create"] = request.session.get("can_create", True)
         # UI server preferences
         if request.session.get("server_settings"):
-            context["ome"]["email"] = request.session.get("server_settings").get(
-                "email", False
-            )
+            context["ome"]["email"] = request.session.get(
+                "server_settings"
+            ).get("email", False)
             if request.session.get("server_settings").get("ui"):
                 # don't overwrite existing ui
                 context.setdefault("ui", {"tree": {}})

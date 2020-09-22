@@ -97,7 +97,8 @@ def do_plural(parser, token):
         tag_name, quantity, single, plural = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError(
-            "%r tag requires exactly three arguments" % token.contents.split()[0]
+            "%r tag requires exactly three arguments"
+            % token.contents.split()[0]
         )
 
     return PluralNode(quantity, single, plural)
@@ -131,7 +132,8 @@ def content_identifier(parser, token):
         tag_name, component, cid = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError(
-            "%r tag requires exactly three arguments" % token.contents.split()[0]
+            "%r tag requires exactly three arguments"
+            % token.contents.split()[0]
         )
 
     return TemplateTokenNode(component, cid)

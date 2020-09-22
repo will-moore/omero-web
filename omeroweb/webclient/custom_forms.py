@@ -42,18 +42,22 @@ class MultiEmailField(forms.Field):
         if not value:
             raise forms.ValidationError("No email.")
         if value.count(" ") > 0:
-            raise forms.ValidationError('Use only separator ";". Remove every space.')
+            raise forms.ValidationError(
+                'Use only separator ";". Remove every space.'
+            )
         emails = value.split(";")
         for email in emails:
             if not self.is_valid_email(email):
                 raise forms.ValidationError(
-                    '%s is not a valid e-mail address. Use separator ";"' % email
+                    '%s is not a valid e-mail address. Use separator ";"'
+                    % email
                 )
         return emails
 
     def is_valid_email(self, email):
         email_pat = re.compile(
-            r"(?:^|\s)[-a-z0-9_.]+@(?:[-a-z0-9]+\.)+[a-z]{2,6}(?:\s|$)", re.IGNORECASE
+            r"(?:^|\s)[-a-z0-9_.]+@(?:[-a-z0-9]+\.)+[a-z]{2,6}(?:\s|$)",
+            re.IGNORECASE,
         )
         return email_pat.match(email) is not None
 
@@ -142,7 +146,9 @@ class AnnotationQuerySetIterator(object):
                     textValue = "No name. ID %s" % obj.id
                 else:
                     textValue = (
-                        len(file_name) < 45 and file_name or (file_name[:42] + "...")
+                        len(file_name) < 45
+                        and file_name
+                        or (file_name[:42] + "...")
                     )
             elif isinstance(obj._obj, TagAnnotationI):
                 if obj.textValue is not None:
@@ -213,7 +219,8 @@ class AnnotationModelMultipleChoiceField(AnnotationModelChoiceField):
     default_error_messages = {
         "list": _("Enter a list of values."),
         "invalid_choice": _(
-            "Select a valid choice. That choice is not one" " of the available choices."
+            "Select a valid choice. That choice is not one"
+            " of the available choices."
         ),
     }
 
@@ -259,7 +266,9 @@ class AnnotationModelMultipleChoiceField(AnnotationModelChoiceField):
                     if int(val) == q.id:
                         res = True
                 if not res:
-                    raise ValidationError(self.error_messages["invalid_choice"])
+                    raise ValidationError(
+                        self.error_messages["invalid_choice"]
+                    )
                 else:
                     final_values.append(val)
         return final_values
@@ -327,7 +336,8 @@ class ObjectModelMultipleChoiceField(ObjectModelChoiceField):
     default_error_messages = {
         "list": _("Enter a list of values."),
         "invalid_choice": _(
-            "Select a valid choice. That choice is not one" " of the available choices."
+            "Select a valid choice. That choice is not one"
+            " of the available choices."
         ),
     }
 
@@ -377,7 +387,9 @@ class ObjectModelMultipleChoiceField(ObjectModelChoiceField):
                         if int(val) == q.id:
                             res = True
                 if not res:
-                    raise ValidationError(self.error_messages["invalid_choice"])
+                    raise ValidationError(
+                        self.error_messages["invalid_choice"]
+                    )
                 else:
                     final_values.append(val)
         return final_values

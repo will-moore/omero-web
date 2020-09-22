@@ -109,13 +109,17 @@ class SessionStore(SessionBase):
 
                 # Remove expired sessions.
                 # Fixing https://code.djangoproject.com/ticket/22938
-                expiry_age = self.get_expiry_age(expiry=self._expiry_date(session_data))
+                expiry_age = self.get_expiry_age(
+                    expiry=self._expiry_date(session_data)
+                )
                 if expiry_age < 0:
                     session_data = {}
                     self.delete()
                     self.create()
             else:
-                logger.debug("No file_data for session: %s" % self._key_to_file())
+                logger.debug(
+                    "No file_data for session: %s" % self._key_to_file()
+                )
         except (IOError, SuspiciousOperation):
             logger.debug("Failed to load session data", exc_info=True)
             self.create()
@@ -128,7 +132,9 @@ class SessionStore(SessionBase):
                 self.save(must_create=True)
             except CreateError:
                 continue
-            logger.debug("Session created with session_key: %s" % self._session_key)
+            logger.debug(
+                "Session created with session_key: %s" % self._session_key
+            )
             self.modified = True
             self._session_cache = {}
             return
@@ -140,7 +146,8 @@ class SessionStore(SessionBase):
 
         session_file_name = self._key_to_file()
         logger.debug(
-            "Save session to file with session_file_name: %s" % session_file_name
+            "Save session to file with session_file_name: %s"
+            % session_file_name
         )
 
         try:
@@ -181,7 +188,9 @@ class SessionStore(SessionBase):
             renamed = False
             try:
                 try:
-                    os.write(output_file_fd, self.encode(session_data).encode())
+                    os.write(
+                        output_file_fd, self.encode(session_data).encode()
+                    )
                 finally:
                     os.close(output_file_fd)
 

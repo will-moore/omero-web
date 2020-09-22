@@ -143,7 +143,9 @@ class Connector(object):
             server = Server.find(server=self.server_id)[0]
         return (server.host, server.port)
 
-    def create_gateway(self, useragent, username=None, password=None, userip=None):
+    def create_gateway(
+        self, useragent, username=None, password=None, userip=None
+    ):
         host, port = self.lookup_host_and_port()
         return client_wrapper(
             username,
@@ -167,7 +169,9 @@ class Connector(object):
         connection.user.logIn()
         self.omero_session_key = connection._sessionUuid
         self.user_id = connection.getUserId()
-        logger.debug("Successfully prepared gateway: %s" % self.omero_session_key)
+        logger.debug(
+            "Successfully prepared gateway: %s" % self.omero_session_key
+        )
         # TODO: Properly handle activating the weblitz_cache
 
     def create_connection(
@@ -177,7 +181,9 @@ class Connector(object):
         connection = self.create_gateway(useragent, username, password, userip)
         try:
             if connection.connect():
-                logger.debug("Successfully created connection for: %s" % username)
+                logger.debug(
+                    "Successfully created connection for: %s" % username
+                )
                 self.prepare_gateway(connection)
                 return connection
         except Exception:
@@ -204,7 +210,8 @@ class Connector(object):
         try:
             if connection.connect(sUuid=self.omero_session_key):
                 logger.debug(
-                    "Successfully joined connection: %s" % self.omero_session_key
+                    "Successfully joined connection: %s"
+                    % self.omero_session_key
                 )
                 connection.setUserId(self.user_id)
                 self.prepare_gateway(connection)
@@ -249,7 +256,9 @@ class Connector(object):
                 )
                 return self.is_compatible(server_version, client_version)
             except Exception:
-                logger.error("Cannot compare server to client version.", exc_info=True)
+                logger.error(
+                    "Cannot compare server to client version.", exc_info=True
+                )
             return False
         finally:
             connection.close()

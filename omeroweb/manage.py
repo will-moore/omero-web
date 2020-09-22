@@ -53,14 +53,21 @@ if __name__ == "__main__":
     from omero.util import configure_logging
 
     if settings.DEBUG:
-        configure_logging(settings.LOGDIR, "OMEROweb.log", loglevel=logging.DEBUG)
+        configure_logging(
+            settings.LOGDIR, "OMEROweb.log", loglevel=logging.DEBUG
+        )
 
     logger.info("Application Starting...")
 
     # Monkeypatch Django development web server to always run in single thread
     # even if --nothreading is not specified on command line
     def force_nothreading(
-        addr, port, wsgi_handler, ipv6=False, threading=False, server_cls=WSGIServer
+        addr,
+        port,
+        wsgi_handler,
+        ipv6=False,
+        threading=False,
+        server_cls=WSGIServer,
     ):
         django_core_servers_basehttp_run(
             addr, port, wsgi_handler, ipv6, False, server_cls

@@ -145,7 +145,10 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         """
 
         if self.getEventContext().shareId is not None:
-            if self.getEventContext().shareId != self._shareId and self._shareId > 0:
+            if (
+                self.getEventContext().shareId != self._shareId
+                and self._shareId > 0
+            ):
                 self._shareId = self.getEventContext().shareId
         return self._shareId
 
@@ -192,10 +195,13 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         ** Deprecated ** Use :meth:`BlitzGateway.getClientSettings`.
         """
         warnings.warn(
-            "Deprecated. Use BlitzGateway.getClientSettings()", DeprecationWarning
+            "Deprecated. Use BlitzGateway.getClientSettings()",
+            DeprecationWarning,
         )
         name = (
-            self.getConfigService().getConfigValue("omero.client.ui.tree.orphans.name")
+            self.getConfigService().getConfigValue(
+                "omero.client.ui.tree.orphans.name"
+            )
             or "Orphaned image"
         )
         description = (
@@ -211,7 +217,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         ** Deprecated ** Use :meth:`BlitzGateway.getClientSettings`.
         """
         warnings.warn(
-            "Deprecated. Use BlitzGateway.getClientSettings()", DeprecationWarning
+            "Deprecated. Use BlitzGateway.getClientSettings()",
+            DeprecationWarning,
         )
         dropdown_menu = dict()
         if toBoolean(
@@ -227,7 +234,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
                 "omero.client.ui.menu.dropdown.colleagues.enabled"
             )
         ):
-            dropdown_menu["colleagues"] = self.getConfigService().getConfigValue(
+            dropdown_menu[
+                "colleagues"
+            ] = self.getConfigService().getConfigValue(
                 "omero.client.ui.menu.dropdown.colleagues"
             )
         if toBoolean(
@@ -487,7 +496,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         tags = []
         owners = dict()
         for element in q.projection(sql, params, self.SERVICE_OPTS):
-            tag_id, description, text, ns, owner, first, last = map(unwrap, element)
+            tag_id, description, text, ns, owner, first, last = map(
+                unwrap, element
+            )
             tags.append(
                 [
                     tag_id,
@@ -495,7 +506,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
                     text,
                     owner,
                     # if tagset, list to be filled in later, otherwise 0
-                    [] if ns == omero.constants.metadata.NSINSIGHTTAGSET else 0,
+                    []
+                    if ns == omero.constants.metadata.NSINSIGHTTAGSET
+                    else 0,
                 ]
             )
             owners[owner] = "%s %s" % (first, last)
@@ -634,7 +647,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
             p.page(((int(page) - 1) * settings.PAGE), settings.PAGE)
         if load_pixels:
             pixels = (
-                "join fetch im.pixels as pix" " left outer join fetch pix.thumbnails "
+                "join fetch im.pixels as pix"
+                " left outer join fetch pix.thumbnails "
             )
         else:
             pixels = ""
@@ -653,7 +667,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
 
         for e in q.findAllByQuery(sql, p, self.SERVICE_OPTS):
             kwargs = {
-                "link": omero.gateway.BlitzObjectWrapper(self, e.copyDatasetLinks()[0])
+                "link": omero.gateway.BlitzObjectWrapper(
+                    self, e.copyDatasetLinks()[0]
+                )
             }
             yield ImageWrapper(self, e, None, **kwargs)
 
@@ -679,7 +695,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
     def createProject(self, name, description=None):
         """ Creates new Project and returns ID """
         warnings.warn(
-            "Deprecated as of OMERO 5.4.0. Use createContainer()", DeprecationWarning
+            "Deprecated as of OMERO 5.4.0. Use createContainer()",
+            DeprecationWarning,
         )
         pr = omero.model.ProjectI()
         pr.name = rstring(str(name))
@@ -690,7 +707,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
     def createScreen(self, name, description=None):
         """ Creates new Screen and returns ID """
         warnings.warn(
-            "Deprecated as of OMERO 5.4.0. Use createContainer()", DeprecationWarning
+            "Deprecated as of OMERO 5.4.0. Use createContainer()",
+            DeprecationWarning,
         )
         sc = omero.model.ScreenI()
         sc.name = rstring(str(name))
@@ -701,7 +719,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
     def createTag(self, name, description=None):
         """ Creates new Tag and returns ID """
         warnings.warn(
-            "Deprecated as of OMERO 5.4.0. Use createContainer()", DeprecationWarning
+            "Deprecated as of OMERO 5.4.0. Use createContainer()",
+            DeprecationWarning,
         )
         tag = omero.model.TagAnnotationI()
         tag.textValue = rstring(str(name))
@@ -712,7 +731,8 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
     def createTagset(self, name, description=None):
         """ Creates new Tag Set and returns ID """
         warnings.warn(
-            "Deprecated as of OMERO 5.4.0. Use createContainer()", DeprecationWarning
+            "Deprecated as of OMERO 5.4.0. Use createContainer()",
+            DeprecationWarning,
         )
         tag = omero.model.TagAnnotationI()
         tag.textValue = rstring(str(name))
@@ -829,7 +849,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         try:
             if oid is None:
                 ann = meta.loadAnnotations(
-                    "Experimenter", [self.getEventContext().userId], None, None, None
+                    "Experimenter",
+                    [self.getEventContext().userId],
+                    None,
+                    None,
+                    None,
                 ).get(self.getEventContext().userId, [])
             else:
                 ann = meta.loadAnnotations(
@@ -861,7 +885,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         try:
             if oid is None:
                 ann = meta.loadAnnotations(
-                    "Experimenter", [self.getEventContext().userId], None, None, None
+                    "Experimenter",
+                    [self.getEventContext().userId],
+                    None,
+                    None,
+                    None,
                 ).get(self.getEventContext().userId, [])
             else:
                 ann = meta.loadAnnotations(
@@ -902,7 +930,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         try:
             if oid is None:
                 ann = meta.loadAnnotations(
-                    "Experimenter", [self.getEventContext().userId], None, None, None
+                    "Experimenter",
+                    [self.getEventContext().userId],
+                    None,
+                    None,
+                    None,
                 ).get(self.getEventContext().userId, [])[0]
             else:
                 ann = meta.loadAnnotations(
@@ -930,7 +962,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         try:
             if oid is None:
                 ann = meta.loadAnnotations(
-                    "Experimenter", [self.getEventContext().userId], None, None, None
+                    "Experimenter",
+                    [self.getEventContext().userId],
+                    None,
+                    None,
+                    None,
                 ).get(self.getEventContext().userId, [])[0]
             else:
                 ann = meta.loadAnnotations(
@@ -945,7 +981,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
             # there should be only one ExperimenterAnnotationLink
             # but if there is more then one all of them should be deleted.
             linkIds = [link.id.val for link in links]
-            self.deleteObjects("ExperimenterAnnotationLink", linkIds, wait=True)
+            self.deleteObjects(
+                "ExperimenterAnnotationLink", linkIds, wait=True
+            )
             # No error handling?
             self.deleteObject(ann)
 
@@ -970,7 +1008,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         try:
             if oid is None:
                 ann = meta.loadAnnotations(
-                    "Experimenter", [self.getEventContext().userId], None, None, None
+                    "Experimenter",
+                    [self.getEventContext().userId],
+                    None,
+                    None,
+                    None,
                 ).get(self.getEventContext().userId, [])[0]
             else:
                 ann = meta.loadAnnotations(
@@ -1026,7 +1068,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         @rtype          String
         """
         query_serv = self.getQueryService()
-        return query_serv.findByString("Format", "value", format).getValue().val
+        return (
+            query_serv.findByString("Format", "value", format).getValue().val
+        )
 
     ################################################
     #   Counters
@@ -1047,7 +1091,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         @rtype              L{(Long, Long)}
         """
         container = self.getContainerService()
-        return container.getCollectionCount(parent, child, ids, None, self.SERVICE_OPTS)
+        return container.getCollectionCount(
+            parent, child, ids, None, self.SERVICE_OPTS
+        )
 
     ################################################
     #   Validators
@@ -1285,7 +1331,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         up_exp = experimenter._obj
         up_exp.omeName = rstring(str(omeName))
         up_exp.firstName = rstring(str(firstName))
-        up_exp.middleName = middleName is not None and rstring(str(middleName)) or None
+        up_exp.middleName = (
+            middleName is not None and rstring(str(middleName)) or None
+        )
         up_exp.lastName = rstring(str(lastName))
         up_exp.email = rstring(str(email))
         up_exp.institution = (
@@ -1309,13 +1357,17 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
 
         # system group
         if isAdmin:
-            g = self.getObject("ExperimenterGroup", attributes={"name": "system"})
+            g = self.getObject(
+                "ExperimenterGroup", attributes={"name": "system"}
+            )
             if defaultGroup.id != g.id:
                 new_groups.append(g._obj)
 
         # user group
         if isActive:
-            g = self.getObject("ExperimenterGroup", attributes={"name": "user"})
+            g = self.getObject(
+                "ExperimenterGroup", attributes={"name": "user"}
+            )
             new_groups.append(g._obj)
 
         # rest of groups
@@ -1420,9 +1472,13 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
             else:
                 enabled.append(privilege)
         # if ALL the Delete/Write permissions are found, Delete/Write is True
-        if set(delete_perms) == set(("DeleteOwned", "DeleteFile", "DeleteManagedRepo")):
+        if set(delete_perms) == set(
+            ("DeleteOwned", "DeleteFile", "DeleteManagedRepo")
+        ):
             enabled.append("Delete")
-        if set(write_perms) == set(("WriteOwned", "WriteFile", "WriteManagedRepo")):
+        if set(write_perms) == set(
+            ("WriteOwned", "WriteFile", "WriteManagedRepo")
+        ):
             enabled.append("Write")
         if set(script_perms) == set(("WriteScriptRepo", "DeleteScriptRepo")):
             enabled.append("Script")
@@ -1638,7 +1694,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
 
         up_exp = experimenter._obj
         up_exp.firstName = rstring(str(firstName))
-        up_exp.middleName = middleName is not None and rstring(str(middleName)) or None
+        up_exp.middleName = (
+            middleName is not None and rstring(str(middleName)) or None
+        )
         up_exp.lastName = rstring(str(lastName))
         up_exp.email = rstring(str(email))
         up_exp.institution = (
@@ -1649,7 +1707,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
 
         admin_serv = self.getAdminService()
         admin_serv.updateSelf(up_exp)
-        defaultGroup = self.getObject("ExperimenterGroup", int(defaultGroupId))._obj
+        defaultGroup = self.getObject(
+            "ExperimenterGroup", int(defaultGroupId)
+        )._obj
         admin_serv.setDefaultGroup(up_exp, defaultGroup)
         self.changeActiveGroup(defaultGroup.id)
 
@@ -1659,7 +1719,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         if not specified.
         """
         group_id = int(group_id)
-        exp_id = exp_id is not None and int(exp_id) or self.getEventContext().userId
+        exp_id = (
+            exp_id is not None and int(exp_id) or self.getEventContext().userId
+        )
         admin_serv = self.getAdminService()
         admin_serv.setDefaultGroup(
             ExperimenterI(exp_id, False), ExperimenterGroupI(group_id, False)
@@ -1988,7 +2050,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         img = self.getObject("Image", image_id)
         sh.removeObject(int(share_id), img._obj)
 
-    def createShare(self, host, images, message, members, enable, expiration=None):
+    def createShare(
+        self, host, images, message, members, enable, expiration=None
+    ):
         sh = self.getShareService()
         items = [i._obj for i in images]
         ms = [m._obj for m in members]
@@ -2000,7 +2064,14 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         return sid
 
     def updateShareOrDiscussion(
-        self, host, share_id, message, add_members, rm_members, enable, expiration=None
+        self,
+        host,
+        share_id,
+        message,
+        add_members,
+        rm_members,
+        enable,
+        expiration=None,
     ):
         share_id = int(share_id)
         sh = self.getShareService()
@@ -2011,7 +2082,11 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         if len(add_members) > 0:
             sh.addUsers(share_id, add_members)
             share = self.getShare(share_id)
-            body = "%s\n\n%s URL: %s\n" % (share.message, sh_type.title(), host)
+            body = "%s\n\n%s URL: %s\n" % (
+                share.message,
+                sh_type.title(),
+                host,
+            )
             subject = "OMERO.%s %s" % (sh_type, share_id)
             sh.notifyMembersOfShare(share_id, subject, body, False)
         if len(rm_members) > 0:
@@ -2051,7 +2126,12 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         if otype is not None and otype in ("Image", "Dataset", "Project"):
             otype = otype.title()
             for e in tm.getByPeriod(
-                [otype], rtime(int(start)), rtime(int(end)), p, True, self.SERVICE_OPTS
+                [otype],
+                rtime(int(start)),
+                rtime(int(end)),
+                p,
+                True,
+                self.SERVICE_OPTS,
             )[otype]:
                 wrapper = KNOWN_WRAPPERS.get(otype.title(), None)
                 im_list.append(wrapper(self, e))
@@ -2104,15 +2184,27 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         p.theFilter = f
         if otype == "image":
             return tm.countByPeriod(
-                ["Image"], rtime(int(start)), rtime(int(end)), p, self.SERVICE_OPTS
+                ["Image"],
+                rtime(int(start)),
+                rtime(int(end)),
+                p,
+                self.SERVICE_OPTS,
             )["Image"]
         elif otype == "dataset":
             return tm.countByPeriod(
-                ["Dataset"], rtime(int(start)), rtime(int(end)), p, self.SERVICE_OPTS
+                ["Dataset"],
+                rtime(int(start)),
+                rtime(int(end)),
+                p,
+                self.SERVICE_OPTS,
             )["Dataset"]
         elif otype == "project":
             return tm.countByPeriod(
-                ["Project"], rtime(int(start)), rtime(int(end)), p, self.SERVICE_OPTS
+                ["Project"],
+                rtime(int(start)),
+                rtime(int(end)),
+                p,
+                self.SERVICE_OPTS,
             )["Project"]
         else:
             c = tm.countByPeriod(
@@ -2149,7 +2241,9 @@ class OmeroWebGateway(omero.gateway.BlitzGateway):
         p.theFilter = f
         service_opts = self.createServiceOptsDict()
         service_opts.setOmeroGroup(str(f.groupId.val))
-        return tm.getEventLogsByPeriod(rtime(start), rtime(end), p, service_opts)
+        return tm.getEventLogsByPeriod(
+            rtime(start), rtime(end), p, service_opts
+        )
         # yield EventLogWrapper(self, e)
 
     def regroupFilesets(self, dsIds, fsIds):
@@ -2208,14 +2302,18 @@ class OmeroWebSafeCallWrapper(OmeroGatewaySafeCallWrapper):  # pragma: no cover
             # version of # _safeCallWrap() from omero.gateway. (See #6365)
             logger.warn("Attempting to re-create proxy and re-call method.")
             try:
-                self.proxyObjectWrapper._obj = self.proxyObjectWrapper._create_func()
+                self.proxyObjectWrapper._obj = (
+                    self.proxyObjectWrapper._create_func()
+                )
                 func = getattr(self.proxyObjectWrapper._obj, self.attr)
                 return func(*args, **kwargs)
             except Exception as e:
                 self.debug(e.__class__.__name__, args, kwargs)
                 raise
         else:
-            super(OmeroWebSafeCallWrapper, self).handle_exception(e, *args, **kwargs)
+            super(OmeroWebSafeCallWrapper, self).handle_exception(
+                e, *args, **kwargs
+            )
 
 
 omero.gateway.SafeCallWrapper = OmeroWebSafeCallWrapper
@@ -2329,7 +2427,9 @@ class OmeroWebObjectWrapper(object):
             )
         )
         # filter for links I own
-        ratingAnns = [r for r in ratingAnns if r.getDetails().owner.id.val == userid]
+        ratingAnns = [
+            r for r in ratingAnns if r.getDetails().owner.id.val == userid
+        ]
         ratingLink = ratingAnns and ratingAnns[0] or None
 
         def getLinkCount(annId):
@@ -2355,7 +2455,9 @@ class OmeroWebObjectWrapper(object):
             ratingAnn = omero.model.LongAnnotationI()
             ratingAnn.setLongValue(rlong(value))
             ratingAnn.setNs(rstring(rating_ns))
-            self._conn.SERVICE_OPTS.setOmeroGroup(self.getDetails().group.id.val)
+            self._conn.SERVICE_OPTS.setOmeroGroup(
+                self.getDetails().group.id.val
+            )
             ratingAnn = self._conn.getUpdateService().saveAndReturnObject(
                 ratingAnn, self._conn.SERVICE_OPTS
             )
@@ -2379,7 +2481,9 @@ class OmeroWebObjectWrapper(object):
             addRating(rating)
 
 
-class ExperimenterWrapper(OmeroWebObjectWrapper, omero.gateway.ExperimenterWrapper):
+class ExperimenterWrapper(
+    OmeroWebObjectWrapper, omero.gateway.ExperimenterWrapper
+):
     """
     omero_model_ExperimenterI class wrapper overwrite
     omero.gateway.ExperimenterWrapper and extend OmeroWebObjectWrapper.
@@ -2416,7 +2520,9 @@ class ExperimenterWrapper(OmeroWebObjectWrapper, omero.gateway.ExperimenterWrapp
             return ExperimenterGroupWrapper(self._conn, geMap[0].parent)
         return None
 
-    def getOtherGroups(self, excluded_names=("user", "guest"), excluded_ids=list()):
+    def getOtherGroups(
+        self, excluded_names=("user", "guest"), excluded_ids=list()
+    ):
         for gem in self.copyGroupExperimenterMap():
             if gem is None:
                 continue
@@ -2473,7 +2579,9 @@ class ExperimenterGroupWrapper(
                 yield ExperimenterWrapper(self._conn, gem.child)
 
     def getOwnersNames(self):
-        warnings.warn("getOwnersNames() deprecated in 5.7.0", DeprecationWarning)
+        warnings.warn(
+            "getOwnersNames() deprecated in 5.7.0", DeprecationWarning
+        )
         owners = list()
         for e in self.getOwners():
             owners.append(e.getFullName())

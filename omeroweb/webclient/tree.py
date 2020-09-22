@@ -308,7 +308,9 @@ def _marshal_project(conn, row):
     project["name"] = unwrap_to_str(name)
     project["ownerId"] = unwrap(owner_id)
     project["childCount"] = unwrap(child_count)
-    project["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    project["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
     return project
 
 
@@ -398,7 +400,9 @@ def _marshal_dataset(conn, row):
     dataset["name"] = unwrap_to_str(name)
     dataset["ownerId"] = unwrap(owner_id)
     dataset["childCount"] = unwrap(child_count)
-    dataset["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    dataset["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
     return dataset
 
 
@@ -544,7 +548,9 @@ def _marshal_image(
     image["id"] = unwrap(image_id)
     image["name"] = unwrap_to_str(name)
     image["ownerId"] = unwrap(owner_id)
-    image["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    image["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
     fileset_id_val = unwrap(fileset_id)
     if fileset_id_val is not None:
         image["filesetId"] = fileset_id_val
@@ -821,11 +827,15 @@ def _marshal_screen(conn, row):
     screen["name"] = unwrap_to_str(name)
     screen["ownerId"] = unwrap(owner_id)
     screen["childCount"] = unwrap(child_count)
-    screen["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    screen["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
     return screen
 
 
-def marshal_screens(conn, group_id=-1, experimenter_id=-1, page=1, limit=settings.PAGE):
+def marshal_screens(
+    conn, group_id=-1, experimenter_id=-1, page=1, limit=settings.PAGE
+):
 
     """Marshals screens
 
@@ -912,7 +922,9 @@ def _marshal_plate(conn, row):
     plate["name"] = unwrap_to_str(name)
     plate["ownerId"] = unwrap(owner_id)
     plate["childCount"] = unwrap(child_count)
-    plate["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    plate["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
     return plate
 
 
@@ -1199,7 +1211,15 @@ def _marshal_tag(conn, row):
     @type row L{list}
 
     """
-    tag_id, text_value, description, owner_id, permissions, namespace, child_count = row
+    (
+        tag_id,
+        text_value,
+        description,
+        owner_id,
+        permissions,
+        namespace,
+        child_count,
+    ) = row
 
     tag = dict()
     tag["id"] = unwrap(tag_id)
@@ -1208,11 +1228,14 @@ def _marshal_tag(conn, row):
     if desc:
         tag["description"] = desc
     tag["ownerId"] = unwrap(owner_id)
-    tag["permsCss"] = parse_permissions_css(permissions, unwrap(owner_id), conn)
+    tag["permsCss"] = parse_permissions_css(
+        permissions, unwrap(owner_id), conn
+    )
 
     if (
         namespace
-        and unwrap_to_str(namespace) == omero.constants.metadata.NSINSIGHTTAGSET
+        and unwrap_to_str(namespace)
+        == omero.constants.metadata.NSINSIGHTTAGSET
     ):
         tag["set"] = True
     else:
@@ -1688,7 +1711,17 @@ def _marshal_well(conn, row):
     @param row The Well row to marshal
     @type row L{list}
     """
-    well_id, owner_id, perms, row, col, plateId, rownames, colnames, platename = row
+    (
+        well_id,
+        owner_id,
+        perms,
+        row,
+        col,
+        plateId,
+        rownames,
+        colnames,
+        platename,
+    ) = row
     well = dict()
     well["id"] = unwrap(well_id)
     well["ownerId"] = unwrap(owner_id)
@@ -1727,7 +1760,9 @@ def _marshal_share(conn, row):
     return share
 
 
-def marshal_shares(conn, member_id=-1, owner_id=-1, page=1, limit=settings.PAGE):
+def marshal_shares(
+    conn, member_id=-1, owner_id=-1, page=1, limit=settings.PAGE
+):
     """Marshal shares for a given user.
 
     @param conn OMERO gateway.
@@ -1807,7 +1842,9 @@ def _marshal_discussion(conn, row):
     return discussion
 
 
-def marshal_discussions(conn, member_id=-1, owner_id=-1, page=1, limit=settings.PAGE):
+def marshal_discussions(
+    conn, member_id=-1, owner_id=-1, page=1, limit=settings.PAGE
+):
     """Marshal discussion for a given user.
 
     @param conn OMERO gateway.

@@ -37,7 +37,9 @@ class ErrorForm(forms.Form):
     comment = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 5, "cols": 60}), required=False
     )
-    error = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 60}))
+    error = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 10, "cols": 60})
+    )
 
 
 class CommentForm(forms.Form):
@@ -48,4 +50,6 @@ class CommentForm(forms.Form):
         label="Your email",
         required=False,
     )
-    comment = forms.CharField(widget=forms.Textarea(attrs={"rows": 5, "cols": 120}))
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 5, "cols": 120})
+    )

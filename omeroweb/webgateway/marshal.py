@@ -187,18 +187,24 @@ def imageMarshal(image, key=None, request=None):
         width, height = image._re.getTileSize()
         zoomLevelScaling = image.getZoomLevelScaling()
 
-        rv.update({"tile_size": {"width": width, "height": height}, "levels": levels})
+        rv.update(
+            {"tile_size": {"width": width, "height": height}, "levels": levels}
+        )
         if zoomLevelScaling is not None:
             rv["zoomLevelScaling"] = zoomLevelScaling
 
     nominalMagnification = (
         image.getObjectiveSettings() is not None
-        and image.getObjectiveSettings().getObjective().getNominalMagnification()
+        and image.getObjectiveSettings()
+        .getObjective()
+        .getNominalMagnification()
         or None
     )
 
     try:
-        server_settings = request.session.get("server_settings", {}).get("viewer", {})
+        server_settings = request.session.get("server_settings", {}).get(
+            "viewer", {}
+        )
     except Exception:
         server_settings = {}
     init_zoom = server_settings.get("initial_zoom_level", 0)
@@ -215,7 +221,8 @@ def imageMarshal(image, key=None, request=None):
                 return size.getValue() if size else None
             except Exception:
                 logger.debug(
-                    "Unable to convert physical pixel size to microns", exc_info=True
+                    "Unable to convert physical pixel size to microns",
+                    exc_info=True,
                 )
                 return None
 
@@ -245,7 +252,11 @@ def imageMarshal(image, key=None, request=None):
             rv["channels"] = [channelMarshal(x) for x in image.getChannels()]
             rv["split_channel"] = image.splitChannelDims()
             rv["rdefs"] = {
-                "model": (image.isGreyscaleRenderingModel() and "greyscale" or "color"),
+                "model": (
+                    image.isGreyscaleRenderingModel()
+                    and "greyscale"
+                    or "color"
+                ),
                 "projection": image.getProjection(),
                 "defaultZ": image._re.getDefaultZ(),
                 "defaultT": image._re.getDefaultT(),
@@ -444,7 +455,9 @@ def chgrpMarshal(conn, rsp):
     """
     rv = {}
     if isinstance(rsp, omero.cmd.ERR):
-        rsp_params = ", ".join(["%s: %s" % (k, v) for k, v in rsp.parameters.items()])
+        rsp_params = ", ".join(
+            ["%s: %s" % (k, v) for k, v in rsp.parameters.items()]
+        )
         rv["error"] = rsp.message
         rv["report"] = "%s %s" % (rsp.name, rsp_params)
     else:
@@ -554,7 +567,10 @@ def chgrpMarshal(conn, rsp):
                         if ch not in objects:
                             objects[ch] = {}
                         # E.g. objects['Dataset']['1'] = {}
-                        objects[ch][child.id.val] = {"id": child.id.val, "name": name}
+                        objects[ch][child.id.val] = {
+                            "id": child.id.val,
+                            "name": name,
+                        }
         # sort objects
         for otype, objs in objects.items():
             objs = list(objs.values())
